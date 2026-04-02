@@ -28,12 +28,30 @@ todoapp/
 
 ## Prerequisites
 
-- Node.js 18.0.0 or higher
+- Node.js 24.0.0 or higher
 - pnpm 8.0.0 or higher
+- Docker and Docker Compose (for containerized development)
 
 Install pnpm globally if not already installed:
 ```bash
 npm install -g pnpm
+```
+
+### Docker Setup
+
+Docker is optional but recommended for local development and testing. It provides:
+- PostgreSQL database environment
+- Isolated service containers
+- Volume management for hot-reload development
+
+**Prerequisites:**
+- Docker Engine 20.10+ or Docker Desktop
+- Docker Compose 2.0+ (included with Docker Desktop)
+
+Verify installation:
+```bash
+docker --version
+docker-compose --version
 ```
 
 ## Getting Started
@@ -44,6 +62,44 @@ Install dependencies for all workspaces:
 ```bash
 pnpm install
 ```
+
+### Docker Containers (Optional)
+
+To run services in Docker containers:
+
+1. **Copy environment configuration:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Start containers:**
+   ```bash
+   docker-compose up -d
+   ```
+
+   This starts:
+   - PostgreSQL 16 on `localhost:5432`
+   - Backend (placeholder, built in Epic 6)
+   - Frontend (placeholder, built in Epic 2)
+
+3. **View logs:**
+   ```bash
+   docker-compose logs -f postgres  # PostgreSQL logs
+   docker-compose logs -f backend   # Backend logs
+   docker-compose logs -f frontend  # Frontend logs
+   ```
+
+4. **Stop containers:**
+   ```bash
+   docker-compose down
+   ```
+
+   To remove volumes (warning: deletes database data):
+   ```bash
+   docker-compose down -v
+   ```
+
+For detailed Docker setup and troubleshooting, see [docs/docker-setup.md](./docs/docker-setup.md).
 
 ### Development
 
