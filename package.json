@@ -14,11 +14,12 @@
     "test": "pnpm -r run test",
     "lint": "biome lint .",
     "format": "biome format --write .",
-    "check": "biome check --apply .",
+    "check": "biome check --write .",
     "format:check": "biome format --check .",
     "check:types": "pnpm -r run check:types",
     "commit": "cz",
-    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf pnpm-lock.yaml"
+    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf pnpm-lock.yaml",
+    "prepare": "husky"
   },
   "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
   "engines": {
@@ -36,9 +37,9 @@
     "typescript": "^5.9.3"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "biome check --apply",
-    "*.json": "biome check --apply",
-    "*.md": "biome check --apply"
+    "*.{ts,tsx,js,jsx}": "biome check --write",
+    "*.json": "biome check --write",
+    "*.md": "biome check --write"
   },
   "config": {
     "commitizen": {

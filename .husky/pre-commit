@@ -1,4 +1,5 @@
 #!/bin/sh
 
 # Pre-commit hook: Run lint-staged to check staged files with Biome
-pnpm exec lint-staged
+pnpm exec lint-staged --allow-empty
+
