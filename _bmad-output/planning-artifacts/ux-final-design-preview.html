@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todoapp - Final Design Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .preview-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        @media (max-width: 1000px) {
+            .preview-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        .device-frame {
+            position: relative;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            aspect-ratio: 9/16;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        .device-frame.desktop {
+            aspect-ratio: 16/9;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            padding: 24px;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e8f5e9 100%);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .screen-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .screen-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+
+        .section-label {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2c2c2c;
+            margin-bottom: 14px;
+            margin-top: 20px;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .section-label::before {
+            margin-right: 8px;
+        }
+
+        .section-label.tasks::before {
+            content: '📝';
+        }
+
+        .section-label.completed::before {
+            content: '✨';
+        }
+
+        .task {
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: white;
+            font-size: 16px;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .task:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .task.active:active {
+            animation: bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.04);
+            }
+            100% {
+                transform: scale(1.01);
+            }
+        }
+
+        .task.completed {
+            background: white;
+            border-left: 4px solid #22c55e;
+            padding-left: 12px;
+            color: #2d5a3d;
+            font-weight: 500;
+            animation: slideIn 0.35s ease-out forwards, moveDown 0.35s ease-out forwards;
+        }
+
+        @keyframes moveDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-icon {
+            font-size: 18px;
+            min-width: 20px;
+        }
+
+        .task-text {
+            flex: 1;
+        }
+
+        .input-container {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 14px;
+            border: 2px dashed #6366f1;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            color: #4a4a4a;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-style: solid;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-add {
+            padding: 12px 14px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 44px;
+        }
+
+        .btn-add:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+        }
+
+        .description {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .description h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .description p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 24px 0;
+        }
+
+        .feature-list li {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 12px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .desktop-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+        }
+
+        .column-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-small {
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .task-small:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .task-small.completed {
+            background: white;
+            border-left: 3px solid #22c55e;
+            padding-left: 11px;
+            color: #2d5a3d;
+            font-weight: 500;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .detail-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+
+        .detail-card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #2c2c2c;
+        }
+
+        .detail-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+        .color-swatch {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .color-sample {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .color-label {
+            padding: 12px;
+            background: white;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .footer {
+            background: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .footer p {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: #1a1a1a;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 80px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 Todoapp - Final Design Preview</h1>
+        <p>Direction 3: Emoji & Playful with High-Contrast Completed Tasks</p>
+    </div>
+
+    <div class="container">
+        <!-- Mobile Preview Section -->
+        <div class="preview-section">
+            <div>
+                <div class="device-frame">
+                    <div class="screen-content">
+                        <div class="section-label tasks">Your Tasks</div>
+                        <div class="task active">
+                            <span class="task-icon">📝</span>
+                            <span class="task-text">Buy groceries</span>
+                        </div>
+                        <div class="task active">
+                            <span class="task-icon">📞</span>
+                            <span class="task-text">Call dentist</span>
+                        </div>
+                        <div class="task active">
+                            <span class="task-icon">📄</span>
+                            <span class="task-text">Finish report</span>
+                        </div>
+                        <div class="task active">
+                            <span class="task-icon">💻</span>
+                            <span class="task-text">Review pull request</span>
+                        </div>
+
+                        <div class="section-label completed">Completed</div>
+                        <div class="task completed">
+                            <span class="task-icon">✅</span>
+                            <span class="task-text">Review meeting notes</span>
+                        </div>
+                        <div class="task completed">
+                            <span class="task-icon">✅</span>
+                            <span class="task-text">Send email to Sarah</span>
+                        </div>
+                        <div class="task completed">
+                            <span class="task-icon">✅</span>
+                            <span class="task-text">Update documentation</span>
+                        </div>
+
+                        <div class="input-container">
+                            <input type="text" class="input-field" placeholder="Add something...">
+                            <button class="btn-add">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="description">
+                <h2>Mobile Experience</h2>
+                <p>Single-column layout optimized for touch and quick task capture on the go.</p>
+                <ul class="feature-list">
+                    <li>Tasks section prominent at top</li>
+                    <li>Completed tasks below for reference</li>
+                    <li>Input field at bottom (sticky, always accessible)</li>
+                    <li>Touch-friendly targets (44x44px minimum)</li>
+                    <li>Gradient background creates visual delight</li>
+                    <li>Emoji icons add personality and context</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Desktop Preview Section -->
+        <div>
+            <h2 class="section-title">Desktop Experience</h2>
+            <div class="device-frame desktop">
+                <div class="screen-content" style="flex-direction: row; padding: 32px; gap: 24px; background: linear-gradient(135deg, #f5f3ff 0%, #e8f5e9 100%);">
+                    <!-- Input at top (full width) -->
+                    <div style="position: absolute; top: 32px; left: 32px; right: 32px; display: flex; gap: 8px; z-index: 10;">
+                        <input type="text" class="input-field" placeholder="Add something..." style="flex: 1;">
+                        <button class="btn-add">+</button>
+                    </div>
+
+                    <!-- Left Column: Tasks -->
+                    <div class="column" style="margin-top: 60px;">
+                        <div class="column-header">📝 Your Tasks</div>
+                        <div class="column-content">
+                            <div class="task-small active">
+                                <span>📝</span>
+                                <span>Buy groceries</span>
+                            </div>
+                            <div class="task-small active">
+                                <span>📞</span>
+                                <span>Call dentist</span>
+                            </div>
+                            <div class="task-small active">
+                                <span>📄</span>
+                                <span>Finish report</span>
+                            </div>
+                            <div class="task-small active">
+                                <span>💻</span>
+                                <span>Review pull request</span>
+                            </div>
+                            <div class="task-small active">
+                                <span>📧</span>
+                                <span>Prepare presentation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Completed -->
+                    <div class="column" style="margin-top: 60px;">
+                        <div class="column-header">✨ Completed</div>
+                        <div class="column-content">
+                            <div class="task-small completed">
+                                <span>✅</span>
+                                <span>Review meeting notes</span>
+                            </div>
+                            <div class="task-small completed">
+                                <span>✅</span>
+                                <span>Send email to Sarah</span>
+                            </div>
+                            <div class="task-small completed">
+                                <span>✅</span>
+                                <span>Update documentation</span>
+                            </div>
+                            <div class="task-small completed">
+                                <span>✅</span>
+                                <span>Deploy to staging</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="description" style="margin-top: 40px;">
+                <p>Two-column layout for desktop with generous space. Tasks on the left (60%), completed on the right (40%). Input field spans full width at the top.</p>
+                <ul class="feature-list">
+                    <li>Two-column side-by-side layout</li>
+                    <li>Input field at top for quick capture</li>
+                    <li>More tasks visible at once</li>
+                    <li>Spacious, generous feel</li>
+                    <li>Natural scanning from left to right</li>
+                    <li>Maximum 1200px width for readability</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Design Details Section -->
+        <div>
+            <h2 class="section-title">Design Specifications</h2>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3>Active Task State</h3>
+                    <p><strong>Background:</strong> White (#FFFFFF)</p>
+                    <p><strong>Text:</strong> Warm Gray (#4a4a4a)</p>
+                    <p><strong>Icon:</strong> Emoji (📝 📞 📄 etc.)</p>
+                    <p><strong>Padding:</strong> 14px</p>
+                    <p><strong>Border Radius:</strong> 10px</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Completed Task State</h3>
+                    <p><strong>Background:</strong> White (#FFFFFF)</p>
+                    <p><strong>Left Border:</strong> 4px solid Green (#22c55e)</p>
+                    <p><strong>Text:</strong> Dark Green (#2d5a3d)</p>
+                    <p><strong>Icon:</strong> ✅ Checkmark</p>
+                    <p><strong>Font Weight:</strong> 500 (Medium)</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Interaction States</h3>
+                    <p><strong>Hover:</strong> Slight right translation + shadow</p>
+                    <p><strong>Active/Click:</strong> Bounce animation 300-400ms</p>
+                    <p><strong>Completion:</strong> Slide left + color change + emoji</p>
+                    <p><strong>Focus:</strong> Indigo ring for keyboard nav</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Typography</h3>
+                    <p><strong>Font:</strong> System fonts (Inter, Segoe UI)</p>
+                    <p><strong>Task Text:</strong> 16px, line-height 1.5</p>
+                    <p><strong>Section Label:</strong> 14px, uppercase</p>
+                    <p><strong>Body Text:</strong> 16px for readability</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Background & Gradient</h3>
+                    <p><strong>Start:</strong> Soft Lavender (#f5f3ff)</p>
+                    <p><strong>End:</strong> Soft Green (#e8f5e9)</p>
+                    <p><strong>Angle:</strong> 135 degrees (diagonal)</p>
+                    <p><strong>Creates:</strong> Cozy, playful atmosphere</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Spacing & Layout</h3>
+                    <p><strong>Base Unit:</strong> 8px grid</p>
+                    <p><strong>Task Gap:</strong> 10px margin-bottom</p>
+                    <p><strong>Section Gap:</strong> 20px</p>
+                    <p><strong>Mobile Padding:</strong> 24px</p>
+                    <p><strong>Desktop Max-width:</strong> 1200px</p>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 80px;">Color Palette</h2>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #f5f3ff;">Lavender</div>
+                    <div class="color-label">#f5f3ff</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #e8f5e9;">Soft Green</div>
+                    <div class="color-label">#e8f5e9</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #6366f1;">Warm Indigo</div>
+                    <div class="color-label">#6366f1</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #22c55e;">Success Green</div>
+                    <div class="color-label">#22c55e</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #2d5a3d; color: white;">Dark Green</div>
+                    <div class="color-label">#2d5a3d</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: #ffffff; color: #4a4a4a; border: 1px solid #e0e0e0;">White</div>
+                    <div class="color-label">#ffffff</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Animation Specs -->
+        <div>
+            <h2 class="section-title">Animation & Feedback</h2>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3>Completion Bounce</h3>
+                    <p><strong>Duration:</strong> 300-400ms</p>
+                    <p><strong>Easing:</strong> cubic-bezier(0.68, -0.55, 0.265, 1.55)</p>
+                    <p><strong>Effect:</strong> Scale 1 → 1.04 → 1.01</p>
+                    <p><strong>Purpose:</strong> Draw attention, celebrate completion</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Color Transition</h3>
+                    <p><strong>Duration:</strong> 300ms</p>
+                    <p><strong>Easing:</strong> ease-out</p>
+                    <p><strong>Effect:</strong> Smooth gradient transition</p>
+                    <p><strong>Signal:</strong> "Your task is done"</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Movement Animation</h3>
+                    <p><strong>Duration:</strong> 350ms</p>
+                    <p><strong>Easing:</strong> ease-out</p>
+                    <p><strong>Effect:</strong> Slide down to Completed section</p>
+                    <p><strong>Signal:</strong> Task organized and archived</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Interaction Feedback</h3>
+                    <p><strong>Hover:</strong> 0.2s transition</p>
+                    <p><strong>Transform:</strong> translateX(4px)</p>
+                    <p><strong>Shadow:</strong> Depth enhancement</p>
+                    <p><strong>Purpose:</strong> Invite interaction</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Accessibility -->
+        <div>
+            <h2 class="section-title">Accessibility & Responsive</h2>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3>Contrast Ratios</h3>
+                    <p>✓ Text on white: 7.8:1 (WCAG AAA)</p>
+                    <p>✓ Active vs Completed: Clear visual distinction</p>
+                    <p>✓ Multiple signals: Color + icon + border + position</p>
+                    <p>✓ Color-blind friendly: Checkmark + border</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Touch & Keyboard</h3>
+                    <p>✓ Touch targets: 44x44px minimum</p>
+                    <p>✓ Keyboard nav: Tab, Enter, Delete keys</p>
+                    <p>✓ Focus states: Clear visual indicator</p>
+                    <p>✓ Enter submits, Delete removes</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Responsive Design</h3>
+                    <p><strong>Mobile:</strong> Single column, input at bottom</p>
+                    <p><strong>Desktop:</strong> Two columns, input at top</p>
+                    <p><strong>Breakpoint:</strong> 768px</p>
+                    <p>✓ Seamless experience across devices</p>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Performance</h3>
+                    <p>✓ Animations <400ms (feels instant)</p>
+                    <p>✓ No layout shift on animation</p>
+                    <p>✓ Smooth 60fps transitions</p>
+                    <p>✓ Efficient CSS for mobile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h2>✅ Your Design Is Ready</h2>
+        <p>This comprehensive preview shows Direction 3 with all the refinements you've chosen.</p>
+        <p style="margin-top: 20px; font-size: 16px; font-weight: 600;">Ready to move forward with implementation!</p>
+    </div>
+</body>
+</html>

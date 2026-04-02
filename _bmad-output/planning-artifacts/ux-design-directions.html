@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todoapp - Design Direction Mockups</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+
+        .mockup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .mockup {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .mockup:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .mockup-label {
+            padding: 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .mockup-label h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #2c2c2c;
+        }
+
+        .mockup-label p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .mockup-preview {
+            padding: 24px;
+            min-height: 600px;
+            background: white;
+            position: relative;
+        }
+
+        /* Design Direction 1: Clean & Minimal */
+        .direction-1 .mockup-preview {
+            background: #ffffff;
+        }
+
+        .direction-1 .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .direction-1 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-1 .task {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: #f5f3ff;
+            border-left: 3px solid #6366f1;
+            font-size: 16px;
+            color: #4a4a4a;
+            transition: all 0.2s;
+        }
+
+        .direction-1 .task:hover {
+            background: #ede9fe;
+            transform: translateX(2px);
+        }
+
+        .direction-1 .task.completed {
+            background: #e8f5e9;
+            border-left-color: #22c55e;
+            opacity: 0.75;
+            text-decoration: line-through;
+            color: #7a7a7a;
+        }
+
+        .direction-1 .input-area {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .direction-1 .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #4a4a4a;
+        }
+
+        .direction-1 .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Design Direction 2: Card Based */
+        .direction-2 .mockup-preview {
+            background: #fafafa;
+        }
+
+        .direction-2 .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .direction-2 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-2 .task {
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-size: 16px;
+            color: #4a4a4a;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .direction-2 .task:hover {
+            border-color: #6366f1;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+        }
+
+        .direction-2 .task.completed {
+            background: #e8f5e9;
+            border-color: #22c55e;
+            opacity: 0.8;
+        }
+
+        .direction-2 .task::before {
+            content: '○ ';
+            color: #6366f1;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .direction-2 .task.completed::before {
+            content: '✓ ';
+            color: #22c55e;
+        }
+
+        .direction-2 .input-area {
+            margin-top: 24px;
+        }
+
+        .direction-2 .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            color: #4a4a4a;
+        }
+
+        .direction-2 .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Design Direction 3: Emoji & Playful */
+        .direction-3 .mockup-preview {
+            background: linear-gradient(135deg, #f5f3ff 0%, #e8f5e9 100%);
+        }
+
+        .direction-3 .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c2c2c;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .direction-3 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-3 .section-title.completed::before {
+            content: '✨ ';
+        }
+
+        .direction-3 .section-title.todo::before {
+            content: '📝 ';
+        }
+
+        .direction-3 .task {
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: white;
+            font-size: 16px;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .direction-3 .task:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .direction-3 .task-emoji {
+            font-size: 18px;
+        }
+
+        .direction-3 .task.completed {
+            background: #e8f5e9;
+            opacity: 0.7;
+        }
+
+        .direction-3 .task.completed .task-emoji::before {
+            content: '✅';
+        }
+
+        .direction-3 .input-area {
+            margin-top: 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .direction-3 .input-field {
+            flex: 1;
+            padding: 12px 14px;
+            border: 2px dashed #6366f1;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            color: #4a4a4a;
+        }
+
+        .direction-3 .input-field:focus {
+            outline: none;
+            border-style: solid;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .direction-3 .btn-add {
+            padding: 12px 16px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .direction-3 .btn-add:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+
+        /* Design Direction 4: Dark Elegant */
+        .direction-4 .mockup-preview {
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        .direction-4 .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #d1d5db;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .direction-4 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-4 .task {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: #1e1b4b;
+            font-size: 16px;
+            color: #f3f4f6;
+            transition: all 0.2s;
+        }
+
+        .direction-4 .task:hover {
+            background: #2e2a5f;
+            transform: translateX(2px);
+        }
+
+        .direction-4 .task.completed {
+            background: #164e63;
+            opacity: 0.8;
+            color: #d1d5db;
+        }
+
+        .direction-4 .input-area {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #334155;
+        }
+
+        .direction-4 .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #1e1b4b;
+            color: #f3f4f6;
+        }
+
+        .direction-4 .input-field:focus {
+            outline: none;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+        }
+
+        /* Design Direction 5: Spacious & Airy */
+        .direction-5 .mockup-preview {
+            background: #ffffff;
+            padding: 40px;
+        }
+
+        .direction-5 .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 32px;
+            margin-top: 40px;
+        }
+
+        .direction-5 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-5 .task {
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            background: #f5f3ff;
+            font-size: 16px;
+            color: #4a4a4a;
+            border-left: 4px solid #6366f1;
+            transition: all 0.2s;
+        }
+
+        .direction-5 .task:hover {
+            background: #ede9fe;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .direction-5 .task.completed {
+            background: #e8f5e9;
+            border-left-color: #22c55e;
+            opacity: 0.7;
+        }
+
+        .direction-5 .input-area {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .direction-5 .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #4a4a4a;
+            transition: all 0.2s;
+        }
+
+        .direction-5 .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Design Direction 6: Compact & Dense */
+        .direction-6 .mockup-preview {
+            background: #ffffff;
+        }
+
+        .direction-6 .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            margin-top: 16px;
+        }
+
+        .direction-6 .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .direction-6 .task {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            background: #f5f3ff;
+            font-size: 14px;
+            color: #4a4a4a;
+            transition: all 0.2s;
+        }
+
+        .direction-6 .task:hover {
+            background: #ede9fe;
+            transform: translateX(2px);
+        }
+
+        .direction-6 .task.completed {
+            background: #e8f5e9;
+            opacity: 0.7;
+            font-size: 13px;
+            color: #7a7a7a;
+        }
+
+        .direction-6 .input-area {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .direction-6 .input-field {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #4a4a4a;
+        }
+
+        .direction-6 .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+
+        .evaluation-guide {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 60px;
+        }
+
+        .evaluation-guide h2 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .criterion {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
+        }
+
+        .criterion h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #2c2c2c;
+        }
+
+        .criterion p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Todoapp Design Direction Mockups</h1>
+
+        <div class="mockup-grid">
+            <!-- Direction 1: Clean & Minimal -->
+            <div class="mockup direction-1">
+                <div class="mockup-label">
+                    <h3>1. Clean & Minimal</h3>
+                    <p>Minimalist sidebar approach with clear visual hierarchy. Emphasizes simplicity and clarity.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title">Tasks</div>
+                    <div class="task">Buy groceries</div>
+                    <div class="task">Call dentist</div>
+                    <div class="task">Finish report</div>
+
+                    <div class="section-title">Completed</div>
+                    <div class="task completed">Review meeting notes</div>
+                    <div class="task completed">Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="Add a task...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 2: Card Based -->
+            <div class="mockup direction-2">
+                <div class="mockup-label">
+                    <h3>2. Card Based</h3>
+                    <p>Card-style design with strong visual separation. Each task feels like a distinct entity.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title">My Tasks</div>
+                    <div class="task">Buy groceries</div>
+                    <div class="task">Call dentist</div>
+                    <div class="task">Finish report</div>
+
+                    <div class="section-title">Done ✓</div>
+                    <div class="task completed">Review meeting notes</div>
+                    <div class="task completed">Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="What's next?">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 3: Emoji & Playful -->
+            <div class="mockup direction-3">
+                <div class="mockup-label">
+                    <h3>3. Emoji & Playful</h3>
+                    <p>Warm, friendly design with emoji and gradient backgrounds. Fun and approachable personality.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title todo">Your Tasks</div>
+                    <div class="task"><span class="task-emoji">📝</span>Buy groceries</div>
+                    <div class="task"><span class="task-emoji">📞</span>Call dentist</div>
+                    <div class="task"><span class="task-emoji">📄</span>Finish report</div>
+
+                    <div class="section-title completed">Completed</div>
+                    <div class="task completed"><span class="task-emoji"></span>Review meeting notes</div>
+                    <div class="task completed"><span class="task-emoji"></span>Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="Add something...">
+                        <button class="btn-add">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 4: Dark Elegant -->
+            <div class="mockup direction-4">
+                <div class="mockup-label">
+                    <h3>4. Dark Elegant</h3>
+                    <p>Dark mode design with sophisticated styling. Perfect for users preferring dark interfaces.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title">TASKS</div>
+                    <div class="task">Buy groceries</div>
+                    <div class="task">Call dentist</div>
+                    <div class="task">Finish report</div>
+
+                    <div class="section-title">COMPLETED</div>
+                    <div class="task completed">Review meeting notes</div>
+                    <div class="task completed">Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="Add a task...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 5: Spacious & Airy -->
+            <div class="mockup direction-5">
+                <div class="mockup-label">
+                    <h3>5. Spacious & Airy</h3>
+                    <p>Generous spacing and breathing room. Premium feel with emphasis on clarity and focus.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title">Tasks</div>
+                    <div class="task">Buy groceries</div>
+                    <div class="task">Call dentist</div>
+                    <div class="task">Finish report</div>
+
+                    <div class="section-title">Completed</div>
+                    <div class="task completed">Review meeting notes</div>
+                    <div class="task completed">Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="Add a task...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 6: Compact & Dense -->
+            <div class="mockup direction-6">
+                <div class="mockup-label">
+                    <h3>6. Compact & Dense</h3>
+                    <p>Efficient use of space with more tasks visible at once. Good for power users and mobile.</p>
+                </div>
+                <div class="mockup-preview">
+                    <div class="section-title">Tasks</div>
+                    <div class="task">Buy groceries</div>
+                    <div class="task">Call dentist</div>
+                    <div class="task">Finish report</div>
+                    <div class="task">Review code</div>
+                    <div class="task">Update docs</div>
+
+                    <div class="section-title">Completed</div>
+                    <div class="task completed">Review meeting notes</div>
+                    <div class="task completed">Send email</div>
+
+                    <div class="input-area">
+                        <input type="text" class="input-field" placeholder="Add a task...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluation Guide -->
+        <div class="evaluation-guide">
+            <h2>✅ Design Evaluation Framework</h2>
+            <div class="criteria-grid">
+                <div class="criterion">
+                    <h3>Layout Intuitiveness</h3>
+                    <p>Which layout feels most natural for your users? Does the information hierarchy match your priorities?</p>
+                </div>
+                <div class="criterion">
+                    <h3>Visual Weight</h3>
+                    <p>Which visual density feels right? Too minimal, too dense, or just right?</p>
+                </div>
+                <div class="criterion">
+                    <h3>Interaction Style</h3>
+                    <p>Which interaction patterns align with your "satisfying completion" vision?</p>
+                </div>
+                <div class="criterion">
+                    <h3>Emotional Response</h3>
+                    <p>Which direction best evokes the "cozy, friendly, confident" feeling you want?</p>
+                </div>
+                <div class="criterion">
+                    <h3>Brand Personality</h3>
+                    <p>Which visual language best represents todoapp's personality?</p>
+                </div>
+                <div class="criterion">
+                    <h3>Mobile Adaptation</h3>
+                    <p>Which direction will work best on small screens and touch devices?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Explore these design directions and let us know which approach resonates most with your vision for todoapp.</p>
+        </div>
+    </div>
+</body>
+</html>
