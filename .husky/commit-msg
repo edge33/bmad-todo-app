@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Commit message hook: Validate conventional commit format with commitlint
+pnpm exec commitlint --edit "$1"
