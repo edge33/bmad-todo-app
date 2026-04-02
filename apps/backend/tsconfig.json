@@ -1,15 +1,15 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
-  },
-  "include": ["src"],
-  "references": [
-    { "path": "../../packages/shared-types" },
-    { "path": "../../packages/shared-utils" }
-  ]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true
+	},
+	"include": ["src"],
+	"references": [
+		{ "path": "../../packages/shared-types" },
+		{ "path": "../../packages/shared-utils" }
+	]
 }

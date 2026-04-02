@@ -194,13 +194,41 @@ The monorepo uses:
 
 ## Contributing
 
-When adding new packages or features:
+We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+- Code quality standards and Biome linting
+- Conventional Commits requirements
+- Pre-commit hook setup
+- Pull request guidelines
 
-1. Follow the existing directory structure
-2. Use scoped naming: `@todoapp/package-name`
-3. Update `tsconfig.base.json` paths if needed
-4. Ensure workspace dependencies are declared properly
-5. Run `pnpm -r run build` to verify everything builds
+## Code Quality
+
+This project uses:
+
+- **Biome** — Linting and formatting
+- **Conventional Commits** — Structured commit history
+- **Husky** — Git hooks for quality checks
+- **TypeScript Strict Mode** — Full type safety
+
+### Code Quality Commands
+
+```bash
+# Check and auto-fix all issues
+pnpm run check
+
+# Lint only
+pnpm run lint
+
+# Format code
+pnpm run format
+
+# Type check
+pnpm run check:types
+
+# Interactive commits (optional)
+pnpm run commit
+```
+
+Pre-commit hooks run automatically on `git commit` to ensure quality.
 
 ## License
 

@@ -27,9 +27,9 @@
   },
   "include": ["src"],
   "references": [
-    { "path": "./packages/shared-types" },
-    { "path": "./packages/shared-utils" },
     { "path": "./apps/frontend" },
-    { "path": "./apps/backend" }
+    { "path": "./apps/backend" },
+    { "path": "./packages/shared-types" },
+    { "path": "./packages/shared-utils" }
   ]
 }

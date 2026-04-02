@@ -1,17 +1,19 @@
 {
-  "name": "@todoapp/shared-types",
-  "version": "0.0.1",
-  "description": "Shared TypeScript type definitions for API contracts",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc",
-    "check:types": "tsc --noEmit",
-    "type-check": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3"
-  }
+	"name": "@todoapp/shared-types",
+	"version": "0.0.1",
+	"description": "Shared TypeScript type definitions for API contracts",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"check:types": "tsc --noEmit",
+		"type-check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"typescript": "^5.3.3"
+	}
 }
