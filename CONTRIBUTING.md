@@ -2,6 +2,25 @@
 
 We appreciate your interest in contributing! Please follow these guidelines to maintain code quality and project consistency.
 
+## Initial Setup - Configure Git Hooks
+
+After cloning the repository, run this command to enable git hooks:
+
+```bash
+git config core.hooksPath .husky
+```
+
+This configures git to use the `.husky` directory for hooks instead of `.git/hooks`.
+
+Alternatively, run the setup script:
+```bash
+bash setup-hooks.sh
+```
+
+Once configured, git hooks will automatically:
+- Run Biome on staged files before commits
+- Validate commit messages against Conventional Commits
+
 ## Code Quality Standards
 
 This project uses **Biome** for linting and formatting. Biome ensures consistent code style and catches common errors automatically.

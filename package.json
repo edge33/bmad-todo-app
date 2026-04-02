@@ -1,48 +1,48 @@
 {
-	"name": "todoapp",
-	"version": "0.0.1",
-	"description": "A modern todo application with monorepo structure",
-	"private": true,
-	"type": "module",
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
-	"scripts": {
-		"dev": "pnpm -r --parallel run dev",
-		"build": "pnpm -r run build",
-		"test": "pnpm -r run test",
-		"lint": "biome lint .",
-		"format": "biome format --write .",
-		"check": "biome check --apply .",
-		"format:check": "biome format --check .",
-		"check:types": "pnpm -r run check:types",
-		"commit": "cz",
-		"clean": "pnpm -r exec rm -rf dist node_modules && rm -rf pnpm-lock.yaml"
-	},
-	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
-	"engines": {
-		"node": ">=24.0.0",
-		"pnpm": ">=8.0.0"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.4.10",
-		"@commitlint/cli": "^20.5.0",
-		"@commitlint/config-conventional": "^20.5.0",
-		"commitizen": "^4.3.1",
-		"cz-conventional-changelog": "^3.3.0",
-		"husky": "^9.1.7",
-		"lint-staged": "^16.4.0",
-		"typescript": "^5.9.3"
-	},
-	"lint-staged": {
-		"*.{ts,tsx,js,jsx}": "biome check --apply",
-		"*.json": "biome check --apply",
-		"*.md": "biome check --apply"
-	},
-	"config": {
-		"commitizen": {
-			"path": "cz-conventional-changelog"
-		}
-	}
+  "name": "todoapp",
+  "version": "0.0.1",
+  "description": "A modern todo application with monorepo structure",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --apply .",
+    "format:check": "biome format --check .",
+    "check:types": "pnpm -r run check:types",
+    "commit": "cz",
+    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf pnpm-lock.yaml"
+  },
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.10",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": "biome check --apply",
+    "*.json": "biome check --apply",
+    "*.md": "biome check --apply"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
 }

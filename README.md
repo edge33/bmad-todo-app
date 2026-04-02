@@ -198,7 +198,7 @@ We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for:
 - Code quality standards and Biome linting
 - Conventional Commits requirements
 - Pre-commit hook setup
-- Pull request guidelines
+- Pull request guidelinesasdasd
 
 ## Code Quality
 

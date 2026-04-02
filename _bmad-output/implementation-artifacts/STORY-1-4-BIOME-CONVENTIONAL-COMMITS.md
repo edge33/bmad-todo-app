@@ -523,17 +523,34 @@ Files created/modified during implementation:
 - Verify all configuration works as expected
 - Document guidelines for team
 
-### Known Considerations
+### What's Missing / Issues Found
 
-1. **Biome Auto-Fix in Pre-Commit**: The `biome check --apply` command fixes issues automatically, then lint-staged re-stages the fixed files. This workflow ensures code quality without blocking commits unnecessarily.
+The git hooks in `.husky/` are configured correctly but require manual git setup due to sandbox limitations:
 
-2. **Commitizen Optional**: Commitizen is marked as optional since developers can write conventional commits manually. However, it's useful for teams that want interactive guidance.
+**What was needed:**
+- Git config to set `core.hooksPath .husky`
+- Sandbox blocks writing to `.git/config`
 
-3. **Hook Bypass**: Document that `git commit --no-verify` bypasses hooks only when absolutely necessary (emergencies). This should be rare and tracked.
+**Solution implemented:**
+1. Removed dependency on `husky.sh` helper from hooks
+2. Created `setup-hooks.sh` script for developers to run
+3. Updated CONTRIBUTING.md with setup instructions
+4. Commitlint works ✅ and rejects invalid commits
+5. Lint-staged configured ✅ to auto-fix on stage
 
-4. **Line Width Consistency**: 100-character line width is a reasonable default. Adjust if team preference differs.
+**For developers:**
+```bash
+# After cloning, run:
+git config core.hooksPath .husky
+# Or:
+bash setup-hooks.sh
+```
 
-5. **Git Hooks Permissions**: Ensure `.husky/` scripts have executable permissions after cloning. The `husky install` command handles this on setup.
+**Testing:**
+- ✅ Commitlint rejects invalid messages
+- ✅ Commitlint accepts valid conventional commits
+- ✅ Hooks are executable and in place
+- ✅ All configuration present
 
 ### Testing Checklist
 
