@@ -14,11 +14,8 @@
     "db:migrate": "echo 'Running database migrations' && prisma migrate deploy || true"
   },
   "dependencies": {
-    "fastify": "^4.25.2",
+    "fastify": "^5.8.4",
     "@todoapp/shared-types": "workspace:*",
     "@todoapp/shared-utils": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.6"
   }
 }
