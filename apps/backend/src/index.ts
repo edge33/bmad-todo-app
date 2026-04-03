@@ -44,7 +44,9 @@ const start = async () => {
   }
 };
 
-if (process.env.NODE_ENV !== "test") {
+// Always start the server when this module is run directly
+// (not when imported as a module)
+if (import.meta.url === `file://${process.argv[1]}`) {
   start();
 }
 
