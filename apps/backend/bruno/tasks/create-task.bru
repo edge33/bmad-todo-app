@@ -1,0 +1,44 @@
+meta {
+  name: POST /api/tasks
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/api/tasks
+}
+
+body:json {
+  {
+    "description": "Buy milk"
+  }
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has task id", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('id');
+    expect(body.id).to.be.greaterThan(0);
+  });
+
+  test("Response has description", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('description');
+    expect(body.description).to.equal('Buy milk');
+  });
+
+  test("New task is not completed", function() {
+    const body = res.getBody();
+    expect(body.completed).to.equal(false);
+  });
+
+  test("Response has timestamps", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('createdAt');
+    expect(body).to.have.property('updatedAt');
+  });
+}

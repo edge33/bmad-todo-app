@@ -5,9 +5,9 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "composite": true,
-    "emitDeclarationOnly": true
+    "allowImportingTsExtensions": false
   },
   "include": ["src"],
   "references": []

@@ -8,6 +8,10 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./dist/index.d.ts"
+  },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit"
