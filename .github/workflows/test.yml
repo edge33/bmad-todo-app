@@ -249,7 +249,7 @@ jobs:
         # Using Vite dev server for E2E tests tests development experience with HMR
         # To test production build instead, replace with: pnpm run build && pnpm run preview &
         run: |
-          pnpm run dev:frontend &
+          pnpm run -C apps/frontend dev &
           FRONTEND_PID=$!
           sleep 2
           if ! kill -0 $FRONTEND_PID 2>/dev/null; then
@@ -259,7 +259,6 @@ jobs:
           echo "✅ Frontend process started (PID: $FRONTEND_PID)"
         env:
           NODE_ENV: test
-          FRONTEND_PORT: 5173
           VITE_API_URL: http://localhost:3000
 
       - name: Wait for servers to be ready
@@ -298,7 +297,7 @@ jobs:
           exit 1
 
       - name: Run E2E tests
-        run: pnpm run test:e2e
+        run: pnpm run -C apps/frontend test:e2e
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
           NODE_ENV: test
@@ -309,7 +308,7 @@ jobs:
         if: always()
         run: |
           pkill -f 'pnpm run start:backend' || true
-          pkill -f 'pnpm run dev:frontend' || true
+          pkill -f 'pnpm run -C apps/frontend dev' || true
           sleep 1
 
       - name: Upload Playwright report
@@ -317,7 +316,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: apps/frontend/playwright-report/
           retention-days: 30
 
       - name: Upload Playwright traces
@@ -325,7 +324,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-traces
-          path: test-results/
+          path: apps/frontend/test-results/
           retention-days: 30
 
   # Job 4: Lint & Type Check (no database)
