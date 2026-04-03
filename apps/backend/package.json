@@ -7,7 +7,6 @@
     "dev": "node src/index.ts",
     "build": "echo 'no build required for backend'",
     "start": "node src/index.ts",
-    "check:types": "tsc --noEmit",
     "lint": "eslint src --ext ts --report-unused-disable-directives",
     "type-check": "tsc --noEmit",
     "test:unit": "node --test src/**/*.test.ts",
@@ -20,7 +19,6 @@
     "@todoapp/shared-utils": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
     "@types/node": "^20.10.6"
   }
 }
