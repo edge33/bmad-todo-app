@@ -242,6 +242,76 @@ pnpm run check
 pnpm run type-check
 ```
 
+### E2E Testing with Playwright
+
+Playwright is configured to run E2E tests across Chromium, Firefox, Safari, and Mobile Chrome.
+
+#### Prerequisites
+
+Install Playwright browsers locally (one-time setup):
+
+```bash
+cd apps/frontend
+pnpm exec playwright install --with-deps
+```
+
+Or install a specific browser only:
+
+```bash
+pnpm exec playwright install chromium
+```
+
+#### Running E2E Tests Locally
+
+**Headless mode (CI-like environment):**
+```bash
+cd apps/frontend
+pnpm run test:e2e
+```
+
+**Headed mode (see browser UI during tests):**
+```bash
+pnpm run test:e2e:headed
+```
+
+**Debug mode (step through tests with inspector):**
+```bash
+pnpm run test:e2e:debug
+```
+
+**View test report after run:**
+```bash
+pnpm exec playwright show-report
+```
+
+#### Configuration
+
+Playwright configuration is in `apps/frontend/playwright.config.ts`:
+- **Base URL:** http://localhost:5173
+- **Browsers:** Chromium, Firefox, Safari, Mobile Chrome
+- **Dev server:** Auto-started if not running
+- **Reports:** HTML report stored in `playwright-report/`
+- **Screenshots:** Captured on test failure
+
+#### Writing Tests
+
+Create test files in `apps/frontend/e2e/` with `.spec.ts` extension:
+
+```typescript
+import { test, expect } from '@playwright/test'
+
+test('user can create task', async ({ page }) => {
+  await page.goto('/')
+  await page.fill('input[placeholder="Add a task"]', 'Buy milk')
+  await page.click('button:has-text("Add")')
+  await expect(page.locator('text=Buy milk')).toBeVisible()
+})
+```
+
+#### CI Environment
+
+In GitHub Actions, Playwright browsers are downloaded automatically as part of the E2E test job. The workflow caches browsers between runs for faster execution.
+
 ### Environment Variables for CI/CD
 
 The workflow uses environment variables from `.env.example`:

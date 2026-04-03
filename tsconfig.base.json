@@ -11,8 +11,6 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -21,12 +19,11 @@
     "noImplicitOverride": true,
     "useUnknownInCatchVariables": true,
     "exactOptionalPropertyTypes": true,
-    "baseUrl": ".",
     "paths": {
-      "@todoapp/shared-types/*": ["packages/shared-types/src/*"],
-      "@todoapp/shared-utils/*": ["packages/shared-utils/src/*"],
-      "@todoapp/frontend/*": ["apps/frontend/src/*"],
-      "@todoapp/backend/*": ["apps/backend/src/*"]
+      "@todoapp/shared-types/*": ["./packages/shared-types/src/*"],
+      "@todoapp/shared-utils/*": ["./packages/shared-utils/src/*"],
+      "@todoapp/frontend/*": ["./apps/frontend/src/*"],
+      "@todoapp/backend/*": ["./apps/backend/src/*"]
     }
   },
   "include": ["src"],

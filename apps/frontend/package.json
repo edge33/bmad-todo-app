@@ -7,22 +7,24 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
     "type-check": "tsc --noEmit",
-    "test:e2e": "echo 'E2E tests placeholder - configure with Playwright'"
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@todoapp/shared-types": "workspace:*",
-    "@todoapp/shared-utils": "workspace:*"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "vite": "^5.0.8",
-    "@vitejs/plugin-react": "^4.2.1",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18"
+    "@playwright/test": "^1.59.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.0.3"
   }
 }

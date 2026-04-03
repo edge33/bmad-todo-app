@@ -4,7 +4,7 @@ node_modules/
 .pnp.js
 
 # Production
-/dist
+**/*/dist
 /build
 *.tsbuildinfo
 
@@ -34,7 +34,8 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
-
+**/playwright-report/*
+**/test-results/*
 # Vite
 .vite/
 .pnpm-store/
