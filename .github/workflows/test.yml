@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build packages
+        run: pnpm run build
+
       - name: Run unit tests
         run: pnpm run test:unit
         env:
@@ -84,6 +87,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
 
       - name: Validate DATABASE_URL
         run: |
@@ -203,6 +209,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      
+      - name: Build packages
+        run: pnpm run build
 
       - name: Install Playwright browsers
         run: pnpm -C apps/frontend exec playwright install --with-deps || { echo "❌ Playwright installation failed. Check system dependencies."; exit 1; }
