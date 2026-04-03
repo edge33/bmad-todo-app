@@ -245,20 +245,23 @@ jobs:
           NODE_ENV: test
           BACKEND_PORT: 3000
 
-      - name: Start frontend dev server
-        # Using Vite dev server for E2E tests tests development experience with HMR
-        # To test production build instead, replace with: pnpm run build && pnpm run preview &
+      - name: Build frontend for production
+        run: pnpm run -C apps/frontend build
+        env:
+          NODE_ENV: production
+
+      - name: Start frontend preview server
+        # Running production build instead of dev server for E2E tests
         run: |
-          pnpm run -C apps/frontend dev &
+          pnpm run -C apps/frontend preview &
           FRONTEND_PID=$!
           sleep 2
           if ! kill -0 $FRONTEND_PID 2>/dev/null; then
-            echo "❌ Frontend process failed to start"
+            echo "❌ Frontend preview process failed to start"
             exit 1
           fi
-          echo "✅ Frontend process started (PID: $FRONTEND_PID)"
+          echo "✅ Frontend preview process started (PID: $FRONTEND_PID)"
         env:
-          NODE_ENV: test
           VITE_API_URL: http://localhost:3000
 
       - name: Wait for servers to be ready
@@ -308,7 +311,7 @@ jobs:
         if: always()
         run: |
           pkill -f 'pnpm run start:backend' || true
-          pkill -f 'pnpm run -C apps/frontend dev' || true
+          pkill -f 'pnpm run -C apps/frontend preview' || true
           sleep 1
 
       - name: Upload Playwright report
