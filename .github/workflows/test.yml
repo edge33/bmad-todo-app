@@ -85,6 +85,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate DATABASE_URL
+        run: |
+          if [[ -z "$DATABASE_URL" ]]; then
+            echo "❌ DATABASE_URL is not set"
+            exit 1
+          fi
+          if [[ ! "$DATABASE_URL" =~ ^postgresql:// ]]; then
+            echo "❌ DATABASE_URL must start with postgresql://"
+            exit 1
+          fi
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+
       - name: Run database migrations
         run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
         env:
@@ -233,6 +246,8 @@ jobs:
           BACKEND_PORT: 3000
 
       - name: Start frontend dev server
+        # Using Vite dev server for E2E tests tests development experience with HMR
+        # To test production build instead, replace with: pnpm run build && pnpm run preview &
         run: |
           pnpm run dev:frontend &
           FRONTEND_PID=$!

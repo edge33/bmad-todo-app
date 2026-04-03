@@ -2,7 +2,7 @@
 title: "Story 1.5: Configure GitHub Actions CI/CD Pipeline"
 epic: "1"
 story: "1.5"
-status: "complete"
+status: "completed"
 createdAt: "2026-04-03"
 completedAt: "2026-04-03"
 ---

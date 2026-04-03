@@ -1,5 +1,8 @@
 #!/bin/sh
 
-# Pre-commit hook: Run lint-staged, filtering out files that biome ignores
+# Pre-commit hook: Run lint-staged to check staged files with Biome
+# Note: lint-staged may report "No files processed" if all files are ignored by biome.json
+# This is expected and not an error (biome ignores _bmad* directories)
+set -e
 pnpm exec lint-staged --allow-empty || true
 

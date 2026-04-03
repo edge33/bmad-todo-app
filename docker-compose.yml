@@ -22,7 +22,7 @@ services:
       context: ./apps/backend
       dockerfile: Dockerfile
     environment:
-      NODE_ENV: development
+      NODE_ENV: ${NODE_ENV:-development}
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/todoapp_dev}
       BACKEND_PORT: ${BACKEND_PORT:-3000}
     ports:

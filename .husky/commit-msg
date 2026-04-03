@@ -1,4 +1,12 @@
 #!/bin/sh
 
 # Commit message hook: Validate conventional commit format with commitlint
+# Requires: pnpm installed and in PATH
+
+if ! command -v pnpm &> /dev/null; then
+  echo "❌ pnpm is not installed or not in PATH"
+  echo "Install pnpm: https://pnpm.io/installation"
+  exit 1
+fi
+
 pnpm exec commitlint --edit "$1"
