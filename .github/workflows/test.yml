@@ -6,43 +6,353 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  NODE_VERSION: '24'
+  PNPM_VERSION: '10.33.0'
+
 jobs:
-  quality:
-    name: Code Quality
+  # Job 1: Unit Tests (mocked dependencies, no database)
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 10.33.0
-      
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
-      - name: Run Biome check
-        run: pnpm run check
-      
-      - name: Type check
-        run: pnpm run check:types
-      
-      - name: Fetch base commit
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
 
-      - name: Validate commit messages
-        if: github.event_name == 'pull_request'
+      - name: Run unit tests
+        run: pnpm run test:unit
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unit-tests
+          fail_ci_if_error: false
+
+  # Job 2: Feature Tests (with PostgreSQL, Bruno API testing)
+  feature-tests:
+    name: Feature Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: todoapp_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate DATABASE_URL
         run: |
-          pnpm exec commitlint \
-            --from ${{ github.event.pull_request.base.sha }} \
-            --to ${{ github.sha }}
+          if [[ -z "$DATABASE_URL" ]]; then
+            echo "❌ DATABASE_URL is not set"
+            exit 1
+          fi
+          if [[ ! "$DATABASE_URL" =~ ^postgresql:// ]]; then
+            echo "❌ DATABASE_URL must start with postgresql://"
+            exit 1
+          fi
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+
+      - name: Run database migrations
+        run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          set -e
+          max_attempts=30
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            if pg_isready -h localhost -p 5432 -U postgres > /dev/null 2>&1; then
+              echo "✅ PostgreSQL is ready"
+              exit 0
+            fi
+            attempt=$((attempt + 1))
+            echo "⏳ Waiting for PostgreSQL... ($attempt/$max_attempts)"
+            sleep 1
+          done
+          echo "❌ PostgreSQL failed to start"
+          exit 1
+
+      - name: Start backend server
+        run: |
+          pnpm run start:backend &
+          SERVER_PID=$!
+          sleep 1
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "❌ Backend process failed to start"
+            exit 1
+          fi
+          echo "✅ Backend process started (PID: $SERVER_PID)"
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+          BACKEND_PORT: 3000
+
+      - name: Wait for server to be ready
+        run: |
+          set -e
+          max_attempts=30
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -s --max-time 5 http://localhost:3000/health > /dev/null 2>&1; then
+              echo "✅ Server is ready"
+              exit 0
+            fi
+            attempt=$((attempt + 1))
+            echo "⏳ Waiting for server... ($attempt/$max_attempts)"
+            sleep 1
+          done
+          echo "❌ Server failed to start after ${max_attempts}s"
+          exit 1
+
+      - name: Run feature tests
+        run: pnpm run test:feature
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+          BACKEND_URL: http://localhost:3000
+
+      - name: Cleanup background processes
+        if: always()
+        run: |
+          pkill -f 'pnpm run start:backend' || true
+          sleep 1
+
+  # Job 3: E2E Tests (with frontend and backend, Playwright)
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: todoapp_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps || { echo "❌ Playwright installation failed. Check system dependencies."; exit 1; }
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          set -e
+          max_attempts=30
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            if pg_isready -h localhost -p 5432 -U postgres > /dev/null 2>&1; then
+              echo "✅ PostgreSQL is ready"
+              exit 0
+            fi
+            attempt=$((attempt + 1))
+            echo "⏳ Waiting for PostgreSQL... ($attempt/$max_attempts)"
+            sleep 1
+          done
+          echo "❌ PostgreSQL failed to start"
+          exit 1
+
+      - name: Run database migrations
+        run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+
+      - name: Start backend server
+        run: |
+          pnpm run start:backend &
+          SERVER_PID=$!
+          sleep 1
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "❌ Backend process failed to start"
+            exit 1
+          fi
+          echo "✅ Backend process started (PID: $SERVER_PID)"
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+          BACKEND_PORT: 3000
+
+      - name: Start frontend dev server
+        # Using Vite dev server for E2E tests tests development experience with HMR
+        # To test production build instead, replace with: pnpm run build && pnpm run preview &
+        run: |
+          pnpm run dev:frontend &
+          FRONTEND_PID=$!
+          sleep 2
+          if ! kill -0 $FRONTEND_PID 2>/dev/null; then
+            echo "❌ Frontend process failed to start"
+            exit 1
+          fi
+          echo "✅ Frontend process started (PID: $FRONTEND_PID)"
+        env:
+          NODE_ENV: test
+          FRONTEND_PORT: 5173
+          VITE_API_URL: http://localhost:3000
+
+      - name: Wait for servers to be ready
+        run: |
+          set -e
+          
+          echo "⏳ Waiting for backend..."
+          max_attempts=30
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -s --max-time 5 http://localhost:3000/health > /dev/null 2>&1; then
+              echo "✅ Backend is ready"
+              break
+            fi
+            attempt=$((attempt + 1))
+            echo "⏳ Waiting for backend... ($attempt/$max_attempts)"
+            sleep 1
+          done
+          if [ $attempt -eq $max_attempts ]; then
+            echo "❌ Backend failed to start"
+            exit 1
+          fi
+          
+          echo "⏳ Waiting for frontend..."
+          attempt=0
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -s --max-time 5 http://localhost:5173 > /dev/null 2>&1; then
+              echo "✅ Frontend is ready"
+              exit 0
+            fi
+            attempt=$((attempt + 1))
+            echo "⏳ Waiting for frontend... ($attempt/$max_attempts)"
+            sleep 1
+          done
+          echo "❌ Frontend failed to start"
+          exit 1
+
+      - name: Run E2E tests
+        run: pnpm run test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: test
+          PLAYWRIGHT_WEBSERVER_URL: http://localhost:5173
+          PLAYWRIGHT_API_URL: http://localhost:3000
+
+      - name: Cleanup background processes
+        if: always()
+        run: |
+          pkill -f 'pnpm run start:backend' || true
+          pkill -f 'pnpm run dev:frontend' || true
+          sleep 1
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 30
+
+  # Job 4: Lint & Type Check (no database)
+  lint-and-types:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript type check
+        run: pnpm run type-check
+
+      - name: Run Biome linting
+        run: pnpm run check

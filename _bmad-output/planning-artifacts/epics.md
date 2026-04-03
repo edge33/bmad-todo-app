@@ -8,7 +8,7 @@ workflowType: 'epics-and-stories'
 project_name: 'todoapp'
 user_name: 'Fran'
 date: '2026-04-02'
-validationDate: '2026-04-02'
+validationDate: '2026-04-03'
 epicsCount: 10
 storiesCount: 14
 frCoveragePercentage: 100
@@ -102,29 +102,53 @@ NFR10: The application functions without JavaScript errors in modern browsers (C
 ### UX Design Requirements
 
 UX-DR1: Implement warm color palette (soft lavender #F5F3FF for active, soft green #E8F5E9 for completed, warm indigo #6366F1 for accents) with dark mode support (deep slate, deep teal, bright indigo)
+
 UX-DR2: Create satisfying completion animation: bounce scale 99%→104%→101% over 300-400ms with cubic-bezier easing on task completion
+
 UX-DR3: Implement smooth color transition from lavender to green over 300ms when marking task complete
+
 UX-DR4: Create checkmark appearance animation (fade in + scale) over 300ms synchronized with color change
+
 UX-DR5: Implement task movement animation: smooth slide from "Tasks" section to "Completed" section over 350ms
+
 UX-DR6: Design visual layout with two sections: "Tasks" (active tasks, top/left) and "Completed" (completed tasks, bottom/right)
+
 UX-DR7: Implement responsive layout: single column on mobile (<768px), two-column (60%/40%) on desktop (≥768px)
+
 UX-DR8: Create input field component with always-visible placement (top on desktop, bottom/sticky on mobile), dashed border styling, emoji support
+
 UX-DR9: Design task card components for active state (soft lavender background, 16px padding, rounded corners) and completed state (white background, 4px green left border, 75-80% opacity)
+
 UX-DR10: Implement touch targets minimum 44x44px for mobile accessibility
+
 UX-DR11: Create focus states and keyboard navigation support (Tab navigation, Enter to submit/complete, Delete to remove)
+
 UX-DR12: Implement loading spinner component for backend operation feedback
+
 UX-DR13: Create error message component for displaying API and validation errors
+
 UX-DR14: Design empty state component with messaging when no tasks exist
+
 UX-DR15: Implement toast notification component for undo actions (3-5 seconds) and error messages
+
 UX-DR16: Use Inter or system font (Segoe UI) as primary typeface with web-safe fallback stack
+
 UX-DR17: Define typography system: H2 20px/600 for section headers, Body 16px/400 for content, Small 14px/400 for timestamps, Input 16px/400
+
 UX-DR18: Create spacing system based on 8px multiples: 4px (micro), 8px (small), 16px (standard), 24px (generous), 32px (breathing room)
+
 UX-DR19: Implement task card padding 16px all sides, gap between tasks 12px, section gap 32px, page padding 16px mobile/24px desktop
+
 UX-DR20: Design dark mode with system preference default, manual toggle persistence in localStorage, warm color palette in dark mode
+
 UX-DR21: Configure Tailwind CSS with custom design tokens: colors, spacing, border-radius, animations via tailwind.config.js
+
 UX-DR22: Create custom component classes using Tailwind @layer for .task-card, .task-active, .task-complete, .task-input variants
+
 UX-DR23: Implement reduced-motion support: disable animations for users with prefers-reduced-motion
+
 UX-DR24: Design example tasks component showing 2-3 pre-populated tasks (1 active, 1+ completed) to teach interface on first open
+
 UX-DR25: Create undo toast component with 3-5 second visibility for accidental deletion recovery
 
 ### FR Coverage Map
@@ -295,38 +319,54 @@ So that code quality is validated automatically and issues are caught before mer
 
 **Given** the repository is pushed to GitHub,
 **When** I open a pull request,
-**Then** GitHub Actions automatically runs with three jobs in parallel:
+**Then** GitHub Actions automatically runs with four jobs in parallel:
 
-**Job 1: Unit Tests**
-- ✅ Node.js 24.x environment with PostgreSQL 16 service
-- ✅ Dependencies installed with `pnpm install --frozen-lockfile`
-- ✅ Database migrations run with `prisma migrate deploy`
-- ✅ Backend unit tests run: `pnpm run test:unit`
-- ✅ Coverage reports uploaded to Codecov
-- ✅ Job fails if tests fail or coverage below target
+**Job 1: Unit Tests (Mocked Dependencies)**
+- Node.js 24.x environment (no database needed)
+- Dependencies installed with `pnpm install --frozen-lockfile`
+- Backend unit tests run against mocked dependencies: `pnpm run test:unit`
+- Mocked Prisma client, mocked external services (no real DB)
+- Tests verify business logic in isolation without database
+- Coverage reports uploaded to Codecov
+- Job fails if tests fail or coverage below target
 
-**Job 2: E2E Tests**
-- ✅ Node.js 24.x environment with PostgreSQL 16 service
-- ✅ Dependencies installed with `pnpm install --frozen-lockfile`
-- ✅ Database migrations run
-- ✅ Playwright browsers installed: `playwright install --with-deps`
-- ✅ E2E tests run in headless mode: `pnpm run test:e2e`
-- ✅ Playwright HTML reports and traces uploaded as artifacts on failure
-- ✅ Artifacts retained for 30 days
-- ✅ Job fails if tests fail
+**Job 2: Feature Tests (Bruno API Testing)**
+- Node.js 24.x environment with PostgreSQL 16 service
+- Dependencies installed with `pnpm install --frozen-lockfile`
+- Database migrations run with `prisma migrate deploy`
+- Backend server starts on localhost:3000
+- Bruno API tests run against live server: `pnpm run test:feature` (or Bruno CLI)
+- Tests verify endpoints work with real database and integrate correctly
+- Bruno collection stored in `bruno/tasks/` directory
+- Tests validate request/response contracts, error handling, data persistence
+- Job fails if tests fail
 
-**Job 3: Lint & Type Check**
-- ✅ Node.js 24.x environment (no database needed)
-- ✅ Dependencies installed with `pnpm install --frozen-lockfile`
-- ✅ TypeScript type check: `pnpm run type-check`
-- ✅ Biome linting check: `pnpm run check`
-- ✅ Job fails if type errors or lint violations found
+**Job 3: E2E Tests (Playwright)**
+- Node.js 24.x environment with PostgreSQL 16 service
+- Dependencies installed with `pnpm install --frozen-lockfile`
+- Database migrations run
+- Backend server starts on localhost:3000
+- Frontend dev server starts on localhost:5173 (or production build)
+- Playwright browsers installed: `playwright install --with-deps`
+- E2E tests run in headless mode: `pnpm run test:e2e`
+- Tests verify full user workflows across frontend and backend
+- Tests validate UI interactions, state management, animations
+- Playwright HTML reports and traces uploaded as artifacts on failure
+- Artifacts retained for 30 days
+- Job fails if tests fail
+
+**Job 4: Lint & Type Check**
+- Node.js 24.x environment (no database needed)
+- Dependencies installed with `pnpm install --frozen-lockfile`
+- TypeScript type check: `pnpm run type-check`
+- Biome linting check: `pnpm run check`
+- Job fails if type errors or lint violations found
 
 **And** workflow file structure:
   - Path: `.github/workflows/test.yml`
   - Triggers on: push to main/develop, pull requests to main/develop
   - Uses pnpm caching for faster builds
-  - Conditional job dependencies (all jobs parallel for speed)
+  - All four jobs run in parallel for speed
 
 **And** GitHub Actions configuration optimized:
   - pnpm store cached between runs
@@ -336,8 +376,8 @@ So that code quality is validated automatically and issues are caught before mer
   - All environment variables in workflow or .env.example
 
 **And** PR status checks configured:
-  - All three jobs must pass to merge
-  - PR shows individual job status
+  - All four jobs must pass to merge
+  - PR shows individual job status (Unit → Feature → E2E → Lint)
   - Failed job details visible in PR checks
   - Passing checks allow merge (if no other blocks)
 
@@ -354,16 +394,21 @@ So that code quality is validated automatically and issues are caught before mer
 
 **And** workflow tested:
   - Create test PR with passing code
-  - Verify all three jobs pass
-  - Create test PR with failing test
+  - Verify all four jobs pass
+  - Create test PR with failing unit test
   - Verify unit test job fails as expected
+  - Create test PR with failing feature test (Bruno)
+  - Verify feature test job fails as expected
+  - Create test PR with failing e2e test
+  - Verify e2e test job fails as expected
   - Create test PR with lint violation
   - Verify lint job fails as expected
 
 **And** documentation complete:
   - README.md mentions CI/CD in setup section
-  - CONTRIBUTING.md links to GitHub Actions status
-  - Developers understand tests run automatically
+  - CONTRIBUTING.md documents the testing pyramid: Unit (mocked) → Feature (Bruno) → E2E (Playwright) → Lint
+  - Developers understand different test purposes and when to add each type
+  - Bruno test collection documented with instructions for running locally
 
 ---
 
