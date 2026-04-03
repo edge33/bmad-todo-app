@@ -102,7 +102,7 @@ jobs:
         run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -133,7 +133,7 @@ jobs:
           echo "✅ Backend process started (PID: $SERVER_PID)"
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
           BACKEND_PORT: 3000
 
       - name: Wait for server to be ready
@@ -157,7 +157,7 @@ jobs:
         run: pnpm run test:feature
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
           BACKEND_URL: http://localhost:3000
 
       - name: Cleanup background processes
@@ -228,7 +228,7 @@ jobs:
         run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
 
       - name: Start backend server
         run: |
@@ -242,11 +242,11 @@ jobs:
           echo "✅ Backend process started (PID: $SERVER_PID)"
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
           BACKEND_PORT: 3000
 
       - name: Build frontend for production
-        run: pnpm run -C apps/frontend build
+        run: pnpm run build
         env:
           NODE_ENV: production
 
@@ -303,7 +303,7 @@ jobs:
         run: pnpm run -C apps/frontend test:e2e
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: test
+          NODE_ENV: development
           PLAYWRIGHT_WEBSERVER_URL: http://localhost:5173
           PLAYWRIGHT_API_URL: http://localhost:3000
 
@@ -352,6 +352,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
 
       - name: Run TypeScript type check
         run: pnpm run type-check

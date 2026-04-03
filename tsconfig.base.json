@@ -20,8 +20,8 @@
     "useUnknownInCatchVariables": true,
     "exactOptionalPropertyTypes": true,
     "paths": {
-      "@todoapp/shared-types/*": ["./packages/shared-types/src/*"],
-      "@todoapp/shared-utils/*": ["./packages/shared-utils/src/*"],
+      "@todoapp/shared-types": ["./packages/shared-types"],
+      "@todoapp/shared-utils": ["./packages/shared-utils"],
       "@todoapp/frontend/*": ["./apps/frontend/src/*"],
       "@todoapp/backend/*": ["./apps/backend/src/*"]
     }

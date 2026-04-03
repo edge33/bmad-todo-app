@@ -1,0 +1,42 @@
+meta {
+  name: PATCH /api/tasks/:id
+  type: http
+  seq: 3
+}
+
+patch {
+  url: http://localhost:3000/api/tasks/1
+}
+
+body:json {
+  {
+    "description": "Updated description",
+    "completed": true
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has updated id", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('id');
+  });
+
+  test("Description is updated", function() {
+    const body = res.getBody();
+    expect(body.description).to.equal('Updated description');
+  });
+
+  test("Completed status is updated", function() {
+    const body = res.getBody();
+    expect(body.completed).to.equal(true);
+  });
+
+  test("Updated timestamp changed", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('updatedAt');
+  });
+}

@@ -4,18 +4,19 @@
   "description": "Fastify backend API server",
   "type": "module",
   "scripts": {
-    "dev": "node src/index.ts",
+    "dev": "node --watch src/index.ts",
     "build": "echo 'no build required for backend'",
     "start": "node src/index.ts",
-    "lint": "eslint src --ext ts --report-unused-disable-directives",
     "type-check": "tsc --noEmit",
-    "test:unit": "node --test src/**/*.test.ts",
+    "test:unit": "NODE_ENV=test node --test src/**/*.test.ts",
     "test:feature": "echo 'Feature tests placeholder - configure with Bruno or API testing tool'",
     "db:migrate": "echo 'Running database migrations' && prisma migrate deploy || true"
   },
   "dependencies": {
-    "fastify": "^5.8.4",
+    "@fastify/autoload": "^6.3.1",
+    "@fastify/cors": "^11.2.0",
     "@todoapp/shared-types": "workspace:*",
-    "@todoapp/shared-utils": "workspace:*"
+    "@todoapp/shared-utils": "workspace:*",
+    "fastify": "^5.8.4"
   }
 }

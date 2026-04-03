@@ -1,26 +1,48 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import autoload from "@fastify/autoload";
+import cors from "@fastify/cors";
 import Fastify from "fastify";
 
-const fastify = Fastify({
-  logger: true,
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+export const createApp = async () => {
+  const fastify = Fastify({
+    logger: process.env.NODE_ENV !== "test",
+  });
 
-// Health check endpoint — verifies server is running
-fastify.get("/health", async (_request, reply) => {
-  try {
-    // In test environment, just verify server is running
-    // Database connectivity is verified separately in migrations
-    return { status: "ok", timestamp: new Date().toISOString() };
-  } catch (err) {
-    reply.status(503);
-    return {
-      status: "unhealthy",
-      error: err instanceof Error ? err.message : "Unknown error",
-    };
-  }
-});
+  // Register CORS plugin
+  await fastify.register(cors, {
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  });
+
+  // Health check endpoint (register before autoload)
+  fastify.get("/health", async (_request, reply) => {
+    try {
+      return { status: "ok", timestamp: new Date().toISOString() };
+    } catch (err) {
+      reply.status(503);
+      return {
+        status: "unhealthy",
+        error: err instanceof Error ? err.message : "Unknown error",
+      };
+    }
+  });
+
+  // Register routes with autoload (must be last)
+  await fastify.register(autoload, {
+    dir: join(__dirname, "routes"),
+    options: { prefix: "/api" },
+  });
+
+  return fastify;
+};
 
 const start = async () => {
   try {
+    const fastify = await createApp();
+
     const portStr = process.env.BACKEND_PORT || "3000";
     const port = parseInt(portStr, 10);
 
@@ -34,20 +56,23 @@ const start = async () => {
   } catch (err: unknown) {
     const error = err as NodeJS.ErrnoException;
     if (error.code === "EADDRINUSE") {
-      fastify.log.error(
+      console.error(
         `❌ Port ${process.env.BACKEND_PORT || "3000"} is already in use. Kill the process or use a different port.`,
       );
     } else {
-      fastify.log.error(err);
+      console.error(err);
     }
     process.exit(1);
   }
 };
 
 // Always start the server when this module is run directly
-// (not when imported as a module)
-if (import.meta.url === `file://${process.argv[1]}`) {
+// (not when imported as a module, and not during tests)
+if (
+  import.meta.url === `file://${process.argv[1]}` &&
+  process.env.NODE_ENV !== "test"
+) {
   start();
 }
 
-export default fastify;
+export default createApp;

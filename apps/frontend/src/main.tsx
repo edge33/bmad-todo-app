@@ -1,7 +1,9 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
+import { queryClient } from "./config/queryClient";
 import "./index.css";
 
 // Initialize dark mode preference from localStorage
@@ -34,8 +36,10 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

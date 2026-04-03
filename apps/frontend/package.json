@@ -9,11 +9,13 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
+    "test:unit": "node --test src/**/*.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.96.2",
     "@todoapp/shared-types": "workspace:*",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
@@ -21,6 +23,7 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
