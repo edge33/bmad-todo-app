@@ -10,9 +10,9 @@ test("smoke test: app loads and renders main component", async ({ page }) => {
   const root = page.locator("#root");
   await expect(root).toBeVisible();
 
-  // Check main app content renders
-  const appContent = page.locator("div").filter({ hasText: "TodoApp" }).first();
-  await expect(appContent).toBeVisible();
+  // Check main app content renders - now shows Tasks section (Story 2.2 layout)
+  const tasksSection = page.locator('section:has(h2:text("Tasks"))');
+  await expect(tasksSection).toBeVisible();
 });
 
 test("verify responsive design on desktop", async ({ page }) => {
