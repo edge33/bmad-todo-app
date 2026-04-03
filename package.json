@@ -13,7 +13,7 @@
     "dev:frontend": "pnpm --filter @todoapp/frontend run dev",
     "dev:backend": "pnpm --filter @todoapp/backend run dev",
     "start:backend": "pnpm --filter @todoapp/backend run start",
-    "build": "pnpm -r run build",
+    "build": "pnpm --filter './packages/**' run build && pnpm --filter './apps/**' run build",
     "test:unit": "pnpm --filter @todoapp/backend run test:unit",
     "test:feature": "pnpm --filter @todoapp/backend run test:feature",
     "test:e2e": "pnpm --filter @todoapp/frontend run test:e2e",
