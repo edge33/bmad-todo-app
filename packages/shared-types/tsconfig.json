@@ -10,7 +10,8 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true,
     "strict": true,
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"]
 }
