@@ -200,14 +200,113 @@ pnpm run test
 
 ## CI/CD
 
-GitHub Actions automatically validates:
+GitHub Actions automatically validates every push and pull request using the workflow defined in `.github/workflows/test.yml`.
 
-- **Code Quality** — Biome linting and formatting
-- **Type Checking** — TypeScript strict mode
-- **Unit Tests** — All tests pass
-- **E2E Tests** — User flows work correctly
+### Automated Checks
 
-All checks must pass before merging to main.
+When you push code or open a pull request, four jobs run in parallel:
+
+1. **Unit Tests** — Backend unit tests with mocked dependencies
+   - No database required
+   - Fast feedback on business logic
+   - Coverage reports uploaded to Codecov
+   - Command: `pnpm run test:unit`
+
+2. **Feature Tests** — API endpoint testing with real database
+   - PostgreSQL 16 service container
+   - Database migrations run automatically
+   - Backend server started on `localhost:3000`
+   - Tests API contracts and data persistence
+   - Command: `pnpm run test:feature`
+
+3. **E2E Tests** — Full user workflow testing with Playwright
+   - PostgreSQL 16 service container
+   - Both frontend (`localhost:5173`) and backend (`localhost:3000`) running
+   - User interactions tested end-to-end
+   - HTML reports and traces uploaded on failure
+   - Command: `pnpm run test:e2e`
+
+4. **Lint & Type Check** — Code quality validation
+   - TypeScript type checking: `pnpm run type-check`
+   - Biome linting: `pnpm run check`
+   - No database required
+   - Catches errors before they reach main
+
+### PR Status
+
+Each pull request shows individual status checks for all four jobs. A PR cannot be merged until all jobs pass.
+
+View detailed logs:
+1. Click the "Checks" tab on your PR
+2. Click on a failed job to see detailed output
+3. Review logs to understand what needs fixing
+
+### Local Testing Before PR
+
+Run the same checks locally to catch issues early:
+
+```bash
+# Run all checks (recommended before pushing)
+pnpm run check         # Biome linting
+pnpm run type-check    # TypeScript checking
+pnpm run test:unit     # Unit tests
+pnpm run test:feature  # Feature tests (needs PostgreSQL)
+pnpm run test:e2e      # E2E tests (needs servers running)
+```
+
+### Environment Variables
+
+The workflow uses these environment variables (configured automatically):
+- `NODE_ENV=test` — Set for CI environment
+- `DATABASE_URL` — Points to PostgreSQL test container
+- `BACKEND_PORT=3000` — Backend server port
+- `FRONTEND_PORT=5173` — Frontend dev server port
+
+For CI-specific configuration, see `.env.example`.
+
+### Troubleshooting Failed Checks
+
+**Failed Linting Check:**
+```bash
+pnpm run check  # Auto-fix most issues
+# Review remaining errors and fix manually
+```
+
+**Failed Type Check:**
+```bash
+pnpm run type-check  # See specific type errors
+# Fix TypeScript errors in affected files
+```
+
+**Failed Unit Tests:**
+```bash
+pnpm run test:unit  # Run locally to reproduce
+# Debug failing test and update code or test
+```
+
+**Failed Feature Tests:**
+```bash
+# Start PostgreSQL first (Docker or local)
+pnpm run db:migrate  # Run migrations
+pnpm run start:backend &  # Start backend
+pnpm run test:feature  # Test API endpoints
+```
+
+**Failed E2E Tests:**
+```bash
+# Start PostgreSQL first
+pnpm run db:migrate
+pnpm dev  # Start frontend and backend in separate terminals
+pnpm run test:e2e  # Run E2E tests
+# Check Playwright traces in test-results/ folder
+```
+
+### Branch Protection Rules
+
+The `main` branch is protected:
+- All status checks must pass
+- Pull requests are required (no direct pushes)
+- Admins can override for emergency fixes
 
 ## Questions?
 

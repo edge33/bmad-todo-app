@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "check:types": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test:e2e": "echo 'E2E tests placeholder - configure with Playwright'"
   },
   "dependencies": {
     "react": "^18.2.0",

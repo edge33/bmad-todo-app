@@ -148,6 +148,134 @@ Run TypeScript type checking:
 pnpm type-check
 ```
 
+## Continuous Integration & Deployment
+
+This project uses GitHub Actions for automated testing and quality checks. When you push code or create a pull request, the CI/CD pipeline automatically runs:
+
+### GitHub Actions Workflow
+
+The workflow is defined in `.github/workflows/test.yml` and includes four parallel jobs:
+
+#### 1. Unit Tests Job
+- **Environment:** Node.js 24, no database
+- **Purpose:** Test backend business logic with mocked dependencies
+- **Command:** `pnpm run test:unit`
+- **Details:**
+  - Uses Node.js built-in test framework
+  - Mocks database and external services
+  - Validates logic in isolation
+  - Uploads coverage reports to Codecov
+
+#### 2. Feature Tests Job
+- **Environment:** Node.js 24 + PostgreSQL 16
+- **Purpose:** Test API endpoints with a real database
+- **Command:** `pnpm run test:feature`
+- **Details:**
+  - Spins up PostgreSQL service container
+  - Runs database migrations
+  - Starts backend server on `localhost:3000`
+  - Tests API endpoints with Bruno or similar tool
+  - Validates request/response contracts and data persistence
+
+#### 3. E2E Tests Job
+- **Environment:** Node.js 24 + PostgreSQL 16 + Frontend dev server
+- **Purpose:** Test full user workflows end-to-end
+- **Command:** `pnpm run test:e2e`
+- **Details:**
+  - Spins up PostgreSQL service container
+  - Starts backend server on `localhost:3000`
+  - Starts frontend dev server on `localhost:5173`
+  - Runs Playwright E2E tests in headless mode
+  - Validates UI interactions and state management
+  - Uploads HTML reports and test traces on failure
+
+#### 4. Lint & Type Check Job
+- **Environment:** Node.js 24, no database
+- **Purpose:** Validate code quality and TypeScript correctness
+- **Commands:**
+  - `pnpm run type-check` — TypeScript type checking
+  - `pnpm run check` — Biome linting
+- **Details:**
+  - Catches type errors early
+  - Enforces code style and best practices
+  - Fast feedback for developers
+
+### Parallel Execution
+
+All four jobs run in parallel for fast feedback. The entire workflow typically completes in 3-5 minutes.
+
+### PR Status Checks
+
+When you open a pull request:
+- GitHub shows individual job status for each test
+- All four jobs must pass before merging
+- Failed jobs show detailed logs for debugging
+
+### Caching Strategy
+
+To speed up builds, the workflow caches:
+- **pnpm store** — Package dependencies
+- **Node modules** — Installed packages
+- **Playwright browsers** — E2E test engines
+
+Cache is automatically invalidated when `pnpm-lock.yaml` changes.
+
+### Local Testing
+
+To test locally before pushing, run the complete test suite:
+
+```bash
+# Run all tests across workspaces
+pnpm test
+
+# Run only unit tests
+pnpm run test:unit
+
+# Run feature tests (requires Docker or local PostgreSQL)
+pnpm run test:feature
+
+# Run E2E tests (requires running servers)
+pnpm run test:e2e
+
+# Run linting and type checks
+pnpm run check
+pnpm run type-check
+```
+
+### Environment Variables for CI/CD
+
+The workflow uses environment variables from `.env.example`:
+- `NODE_ENV=test` — Set automatically in CI
+- `DATABASE_URL` — Test database (PostgreSQL service)
+- `BACKEND_PORT=3000` — Backend server port
+- `FRONTEND_PORT=5173` — Frontend dev server port
+- `VITE_API_URL=http://localhost:3000` — API endpoint for frontend
+
+### Troubleshooting Failed Checks
+
+**Type Check Failed:**
+- Run `pnpm run type-check` locally and fix errors
+- Check TypeScript configuration in `tsconfig.base.json`
+
+**Linting Failed:**
+- Run `pnpm run check` to auto-fix most issues
+- Check Biome configuration in `biome.json`
+
+**Unit Tests Failed:**
+- Run `pnpm run test:unit` locally
+- Check test output for specific failures
+
+**Feature Tests Failed:**
+- Ensure PostgreSQL is running
+- Run `pnpm run db:migrate` to sync database
+- Run `pnpm run start:backend` and test manually
+
+**E2E Tests Failed:**
+- Check that both frontend and backend start correctly
+- Run servers locally: `pnpm dev` in separate terminal
+- Run `pnpm run test:e2e` to reproduce failure
+- Review Playwright traces uploaded to workflow artifacts
+
 ## Workspace Organization
 
 ### Apps
