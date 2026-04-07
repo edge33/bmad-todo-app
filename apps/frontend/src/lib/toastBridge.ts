@@ -1,4 +1,8 @@
-export type UndoToastPayload = { taskId: number; description: string };
+export type UndoToastPayload = {
+  taskId: number;
+  description: string;
+  action?: "complete" | "delete";
+};
 export type RetryFn = () => void;
 
 type UndoListener = (payload: UndoToastPayload) => void;

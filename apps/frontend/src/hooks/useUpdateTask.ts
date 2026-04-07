@@ -58,6 +58,7 @@ export const useUpdateTask = () => {
         notifyUndoToast({
           taskId: data.id,
           description: data.description,
+          action: "complete",
         });
       }
     },

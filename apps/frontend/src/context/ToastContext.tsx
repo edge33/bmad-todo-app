@@ -1,22 +1,33 @@
 import type React from "react";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCreateTask } from "../hooks/useCreateTask.ts";
 import { useUpdateTask } from "../hooks/useUpdateTask.ts";
 import { subscribeErrorToast, subscribeUndoToast } from "../lib/toastBridge.ts";
 
 type ToastState =
-  | { kind: "undo"; taskId: number }
+  | {
+      kind: "undo";
+      taskId: number;
+      action: "complete" | "delete";
+      description: string;
+    }
   | { kind: "error"; message: string; onRetry?: () => void }
   | null;
 
 function ToastViewport() {
   const [toast, setToast] = useState<ToastState>(null);
-  const { mutate: updateTask, isPending } = useUpdateTask();
+  const { mutate: updateTask, isPending: isUpdatePending } = useUpdateTask();
+  const { mutate: createTaskMutate, isPending: isCreatePending } =
+    useCreateTask();
+  const isPending = isUpdatePending || isCreatePending;
 
   const dismiss = useCallback(() => setToast(null), []);
 
   useLayoutEffect(
     () =>
-      subscribeUndoToast(({ taskId }) => setToast({ kind: "undo", taskId })),
+      subscribeUndoToast(({ taskId, description, action = "complete" }) =>
+        setToast({ kind: "undo", taskId, description, action }),
+      ),
     [],
   );
 
@@ -76,23 +87,32 @@ function ToastViewport() {
     );
   }
 
+  const label = toast.action === "delete" ? "Task deleted" : "Task completed";
+
   return (
     <div
       role="status"
       aria-live="polite"
-      aria-label="Task completed"
+      aria-label={label}
       className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-lg"
     >
-      <span>Task completed</span>
+      <span>{label}</span>
       <button
         type="button"
         disabled={isPending}
         className="min-h-[44px] min-w-[44px] rounded-md bg-indigo-600 px-3 py-2 font-medium text-white disabled:opacity-50"
         onClick={() => {
-          updateTask(
-            { id: toast.taskId, completed: false },
-            { onSuccess: dismiss },
-          );
+          if (toast.action === "delete") {
+            createTaskMutate(
+              { description: toast.description },
+              { onSuccess: dismiss },
+            );
+          } else {
+            updateTask(
+              { id: toast.taskId, completed: false },
+              { onSuccess: dismiss },
+            );
+          }
         }}
       >
         Undo
