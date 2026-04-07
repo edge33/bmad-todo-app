@@ -1,7 +1,8 @@
 export type UndoToastPayload = { taskId: number; description: string };
+export type RetryFn = () => void;
 
 type UndoListener = (payload: UndoToastPayload) => void;
-type ErrorListener = (message: string) => void;
+type ErrorListener = (message: string, onRetry?: RetryFn) => void;
 
 let undoListener: UndoListener | null = null;
 let errorListener: ErrorListener | null = null;
@@ -24,6 +25,6 @@ export function notifyUndoToast(payload: UndoToastPayload): void {
   undoListener?.(payload);
 }
 
-export function notifyErrorToast(message: string): void {
-  errorListener?.(message);
+export function notifyErrorToast(message: string, onRetry?: RetryFn): void {
+  errorListener?.(message, onRetry);
 }

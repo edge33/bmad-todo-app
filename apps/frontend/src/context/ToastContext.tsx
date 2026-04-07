@@ -5,7 +5,7 @@ import { subscribeErrorToast, subscribeUndoToast } from "../lib/toastBridge.ts";
 
 type ToastState =
   | { kind: "undo"; taskId: number }
-  | { kind: "error"; message: string }
+  | { kind: "error"; message: string; onRetry?: () => void }
   | null;
 
 function ToastViewport() {
@@ -22,7 +22,13 @@ function ToastViewport() {
 
   useLayoutEffect(
     () =>
-      subscribeErrorToast((message) => setToast({ kind: "error", message })),
+      subscribeErrorToast((message, onRetry) =>
+        setToast(
+          onRetry
+            ? { kind: "error", message, onRetry }
+            : { kind: "error", message },
+        ),
+      ),
     [],
   );
 
@@ -47,6 +53,18 @@ function ToastViewport() {
         className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-red-200 bg-white px-4 py-3 text-sm text-red-800 shadow-lg"
       >
         <span>{toast.message}</span>
+        {toast.onRetry && (
+          <button
+            type="button"
+            className="min-h-[44px] min-w-[44px] rounded-md bg-indigo-600 px-3 py-2 font-medium text-white"
+            onClick={() => {
+              toast.onRetry?.();
+              dismiss();
+            }}
+          >
+            Retry
+          </button>
+        )}
         <button
           type="button"
           className="min-h-[44px] min-w-[44px] rounded-md px-2 text-red-700 underline"

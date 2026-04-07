@@ -134,7 +134,6 @@ test.describe("Story 4.1: Task Input & Creation", () => {
     await expect(input).toHaveAttribute("maxlength", "500");
   });
 
-
   // ── Keyboard interactions ─────────────────────────────────────────────────
 
   test("Escape key clears the input field", async ({ page }) => {

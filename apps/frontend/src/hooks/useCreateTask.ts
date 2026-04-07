@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateTaskRequest, Task } from "@todoapp/shared-types";
+import { notifyErrorToast } from "../lib/toastBridge.ts";
 import { createTask } from "../services/taskService.ts";
 import { taskKeys } from "./queryKeys.ts";
 
@@ -10,7 +11,7 @@ import { taskKeys } from "./queryKeys.ts";
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (input: CreateTaskRequest) =>
       createTask({ description: input.description.trim() }),
     onMutate: async (newTask) => {
@@ -33,13 +34,18 @@ export const useCreateTask = () => {
 
       return { previousData };
     },
-    onError: (_error, _newTask, context) => {
+    onError: (error, variables, context) => {
       if (context?.previousData !== undefined) {
         queryClient.setQueryData(taskKeys.lists(), context.previousData);
       }
+      const message =
+        error instanceof Error ? error.message : "Failed to create task.";
+      notifyErrorToast(message, () => mutation.mutate(variables));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
+
+  return mutation;
 };
