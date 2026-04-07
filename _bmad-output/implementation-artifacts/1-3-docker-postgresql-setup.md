@@ -4,9 +4,9 @@ story_key: 1-3-docker-postgresql-setup
 title: Story 1.3 - Set Up Docker & PostgreSQL Infrastructure
 epic: Epic 1 - Monorepo & Infrastructure Setup
 sprint: 1
-status: ready-for-dev
+status: review
 date_created: 2026-04-02
-date_updated: 2026-04-02
+date_updated: 2026-04-07
 ---
 
 # Story 1.3: Set Up Docker & PostgreSQL Infrastructure

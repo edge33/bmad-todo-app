@@ -17,3 +17,52 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Story 3.1: completion entrance (bounce + color + checkmark + slide) */
+.task-complete-enter {
+  animation: task-complete-entrance 630ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.task-complete-enter svg {
+  animation: task-check-fade 300ms ease-out both;
+}
+
+@keyframes task-complete-entrance {
+  0% {
+    transform: scale(0.99) translateY(-10px);
+    background-color: #f5f3ff;
+  }
+  35% {
+    transform: scale(1.04);
+    background-color: #e8f5e9;
+  }
+  50% {
+    transform: scale(1.01);
+    background-color: #e8f5e9;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    background-color: #ffffff;
+  }
+}
+
+@keyframes task-check-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-complete-enter {
+    animation-name: none;
+    animation-duration: 0s;
+  }
+
+  .task-complete-enter svg {
+    opacity: 1;
+    animation: none;
+  }
+}

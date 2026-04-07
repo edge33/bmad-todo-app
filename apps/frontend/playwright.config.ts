@@ -1,4 +1,8 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 /**
  * Read environment variables from file.
@@ -54,11 +58,16 @@ export default defineConfig({
     },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /**
+   * Start API (no --watch) then Vite; single process so Playwright waits on :5173.
+   * Root `pnpm dev` uses backend --watch and can hit EMFILE in some environments.
+   */
   webServer: {
-    command: "pnpm run dev",
+    command:
+      'sh -c "pnpm --filter @todoapp/backend run start & sleep 2 && pnpm --filter @todoapp/frontend run dev"',
+    cwd: repoRoot,
     url: "http://localhost:5173",
     reuseExistingServer: process.env.CI !== "true",
-    timeout: 120 * 1000,
+    timeout: 180 * 1000,
   },
 });
