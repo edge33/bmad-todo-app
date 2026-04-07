@@ -1,4 +1,5 @@
 import type React from "react";
+import { useDeleteTask } from "../hooks/useDeleteTask.ts";
 import { useTasks } from "../hooks/useTasks.ts";
 import { ErrorMessage } from "./ErrorMessage.tsx";
 import { LoadingSpinner } from "./LoadingSpinner.tsx";
@@ -12,6 +13,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   onCompleteStart,
 }) => {
   const { data: tasks, isLoading, error } = useTasks();
+  const { mutate: deleteTask } = useDeleteTask();
 
   if (isLoading) {
     return (
@@ -46,6 +48,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
             <li key={task.id}>
               <ActiveTaskCard
                 task={task}
+                onDelete={deleteTask}
                 {...(onCompleteStart ? { onCompleteStart } : {})}
               />
             </li>
