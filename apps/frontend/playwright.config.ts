@@ -1,8 +1,4 @@
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
-
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 /**
  * Read environment variables from file.
@@ -28,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://localhost:5173",
+    baseURL: `http://localhost:${process.env.CI ? "4173" : "5173"}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
     screenshot: "only-on-failure",
@@ -57,4 +53,10 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
     },
   ],
+
+  webServer: {
+    command: process.env.CI ? "pnpm run dev" : "npm run dev || pnpm run dev",
+    url: "http://localhost:5173",
+    reuseExistingServer: !process.env.CI,
+  },
 });
