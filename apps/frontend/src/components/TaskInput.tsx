@@ -12,7 +12,7 @@ export const TaskInput: React.FC = () => {
     }
     e.preventDefault();
     const description = value.trim();
-    if (!description || isPending) {
+    if (!description || isPending || description.length > 500) {
       return;
     }
     createTask(
@@ -42,6 +42,7 @@ export const TaskInput: React.FC = () => {
         handleSubmit(e);
         handleEscape(e);
       }}
+      maxLength={500}
       className="w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 text-base transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none disabled:opacity-60"
       aria-label="Add task description"
     />
