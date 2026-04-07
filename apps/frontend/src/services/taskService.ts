@@ -64,3 +64,10 @@ export async function updateTask(
   }
   return res.json() as Promise<Task>;
 }
+
+export async function deleteTask(id: number): Promise<void> {
+  const res = await fetch(`${TASKS_PATH}/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    throw await parseResponseError(res);
+  }
+}
