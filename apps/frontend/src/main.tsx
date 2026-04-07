@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { queryClient } from "./config/queryClient";
+import { ToastProvider } from "./context/ToastContext.tsx";
 import "./index.css";
 
 // Initialize dark mode preference from localStorage
@@ -37,9 +38,11 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <ToastProvider>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </ToastProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 );

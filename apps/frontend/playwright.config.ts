@@ -1,4 +1,8 @@
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 /**
  * Read environment variables from file.
@@ -53,12 +57,4 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
     },
   ],
-
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: "pnpm run dev",
-    url: "http://localhost:5173",
-    reuseExistingServer: process.env.CI !== "true",
-    timeout: 120 * 1000,
-  },
 });

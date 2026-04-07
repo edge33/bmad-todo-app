@@ -6,7 +6,7 @@ import type {
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   errorHandler,
-  ValidationError
+  ValidationError,
 } from "../../middleware/errorHandler.ts";
 import { taskService } from "../../services/taskService.ts";
 
@@ -28,7 +28,10 @@ export default async function (fastify: FastifyInstance) {
   // POST / - creates a new task
   fastify.post<{ Body: CreateTaskRequest; Reply: Task }>(
     "/",
-    async (req: FastifyRequest<{ Body: CreateTaskRequest }>, reply: FastifyReply) => {
+    async (
+      req: FastifyRequest<{ Body: CreateTaskRequest }>,
+      reply: FastifyReply,
+    ) => {
       try {
         const task = taskService.create(req.body);
         reply.status(201);
@@ -45,25 +48,34 @@ export default async function (fastify: FastifyInstance) {
     Params: { id: string };
     Body: UpdateTaskRequest;
     Reply: Task;
-  }>("/:id", async (req: FastifyRequest<{ Params: { id: string }; Body: UpdateTaskRequest }>, reply: FastifyReply) => {
-    try {
-      const id = parseInt(req.params.id, 10);
-      if (Number.isNaN(id) || id < 1) {
-        throw new ValidationError("Task ID must be a positive integer");
-      }
+  }>(
+    "/:id",
+    async (
+      req: FastifyRequest<{ Params: { id: string }; Body: UpdateTaskRequest }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const id = parseInt(req.params.id, 10);
+        if (Number.isNaN(id) || id < 1) {
+          throw new ValidationError("Task ID must be a positive integer");
+        }
 
-      const task = taskService.update(id, req.body);
-      return task;
-    } catch (error) {
-      const { status, body } = errorHandler(error);
-      return reply.status(status).send(body);
-    }
-  });
+        const task = taskService.update(id, req.body);
+        return task;
+      } catch (error) {
+        const { status, body } = errorHandler(error);
+        return reply.status(status).send(body);
+      }
+    },
+  );
 
   // DELETE /:id - deletes an existing task
   fastify.delete<{ Params: { id: string } }>(
     "/:id",
-    async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      req: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       try {
         const id = parseInt(req.params.id, 10);
         if (Number.isNaN(id) || id < 1) {
