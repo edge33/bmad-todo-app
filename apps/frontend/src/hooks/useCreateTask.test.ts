@@ -81,4 +81,14 @@ describe("useCreateTask Hook", async () => {
     const hookCode = useCreateTask.toString();
     t.assert.ok(hookCode.includes("context?.previousData"));
   });
+
+  await test("hook notifies error toast on failure (onError)", (t: TestContext) => {
+    const hookCode = useCreateTask.toString();
+    t.assert.ok(hookCode.includes("notifyErrorToast"));
+  });
+
+  await test("hook passes retry callback to error toast", (t: TestContext) => {
+    const hookCode = useCreateTask.toString();
+    t.assert.ok(hookCode.includes("mutation.mutate(variables)"));
+  });
 });
