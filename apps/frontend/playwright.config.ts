@@ -57,17 +57,4 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
     },
   ],
-
-  /**
-   * Start API (no --watch) then Vite; single process so Playwright waits on :5173.
-   * Root `pnpm dev` uses backend --watch and can hit EMFILE in some environments.
-   */
-  webServer: {
-    command:
-      'sh -c "pnpm --filter @todoapp/backend run start & sleep 2 && pnpm --filter @todoapp/frontend run dev"',
-    cwd: repoRoot,
-    url: "http://localhost:5173",
-    reuseExistingServer: process.env.CI !== "true",
-    timeout: 180 * 1000,
-  },
 });

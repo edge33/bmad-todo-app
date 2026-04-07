@@ -12,17 +12,17 @@ function ToastViewport() {
   const [toast, setToast] = useState<ToastState>(null);
   const { mutate: updateTask, isPending } = useUpdateTask();
 
-  console.log('render')
-
   const dismiss = useCallback(() => setToast(null), []);
 
   useLayoutEffect(
-    () => subscribeUndoToast(({ taskId }) => setToast({ kind: "undo", taskId })),
+    () =>
+      subscribeUndoToast(({ taskId }) => setToast({ kind: "undo", taskId })),
     [],
   );
 
   useLayoutEffect(
-    () => subscribeErrorToast((message) => setToast({ kind: "error", message })),
+    () =>
+      subscribeErrorToast((message) => setToast({ kind: "error", message })),
     [],
   );
 
