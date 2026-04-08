@@ -65,6 +65,12 @@ test.describe("Story 5.2: Delete Button UI & Interaction Model", () => {
       testInfo.project.name === "Mobile Chrome",
       "Mobile always shows delete button",
     );
+    // Firefox headless reports @media(hover:none) as true (no pointer device),
+    // triggering the always-visible mobile style — not a real-user regression.
+    test.skip(
+      testInfo.project.name === "firefox",
+      "Firefox headless reports hover:none, cannot test opacity-0 default state",
+    );
     await setupRoutes(page);
     await page.goto("/");
     await page.waitForSelector('[data-testid="active-task-1"]');
