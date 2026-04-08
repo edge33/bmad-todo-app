@@ -25,6 +25,16 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 2-3-tanstack-query-setup (2026-04-08)
+
+- **`useCreateTask.ts` stub mutationFn / `onError` dead code** — intentional example stub; real implementation delivered in Story 4.x
+- **`/health` route unreachable try/catch** — pre-existing dead code; catch block can never fire
+- **Scope creep — backend REST API in Story 2.3 commit** — informational; backend routes, service, middleware, and shared-types were bundled into this commit despite being out of scope for Story 2.3
+- **`useCreateTask` optimistic update cache key mismatch with filters** — `taskKeys.lists()` used instead of `taskKeys.list(filters)`; acceptable until filtered queries are implemented
+- **CORS `FRONTEND_URL` no multi-origin / no URL validation** — acceptable for current scope; revisit in deployment/hardening epic
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

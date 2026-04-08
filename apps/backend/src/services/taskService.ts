@@ -46,12 +46,21 @@ export const taskService = {
       throw new NotFoundError("Task", id);
     }
 
+    if (req.description === undefined && req.completed === undefined) {
+      throw new ValidationError(
+        "At least one field (description or completed) must be provided",
+      );
+    }
+
     if (req.description !== undefined) {
       const description = validateDescription(req.description);
       task.description = description;
     }
 
     if (req.completed !== undefined) {
+      if (typeof req.completed !== "boolean") {
+        throw new ValidationError("completed must be a boolean");
+      }
       task.completed = req.completed;
     }
 

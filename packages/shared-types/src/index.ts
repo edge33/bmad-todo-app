@@ -4,7 +4,7 @@ export interface Task {
   completed: boolean;
   createdAt: string;
   updatedAt: string;
-  userId: null;
+  userId: number | null;
 }
 
 export interface CreateTaskRequest {

@@ -56,7 +56,7 @@ export default async function (fastify: FastifyInstance) {
     ) => {
       try {
         const id = parseInt(req.params.id, 10);
-        if (Number.isNaN(id) || id < 1) {
+        if (Number.isNaN(id) || id < 1 || !Number.isInteger(Number(req.params.id))) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
@@ -78,7 +78,7 @@ export default async function (fastify: FastifyInstance) {
     ) => {
       try {
         const id = parseInt(req.params.id, 10);
-        if (Number.isNaN(id) || id < 1) {
+        if (Number.isNaN(id) || id < 1 || !Number.isInteger(Number(req.params.id))) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
