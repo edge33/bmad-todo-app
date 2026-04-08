@@ -1,6 +1,6 @@
 # Story 2.3: Set Up TanStack Query for Server State Management
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -279,6 +279,33 @@ Claude 4.5 Haiku
 **Generated/Updated:**
 - apps/frontend/node_modules/ (pnpm dependencies)
 - apps/frontend/dist/ (build output after pnpm run build)
+
+## Review Findings
+
+### Patch
+
+- [ ] [Review][Patch] NODE_ENV changed to `development` in all CI test/e2e jobs — breaks logger-silencing and server-start guards that key on `NODE_ENV === "test"` [`.github/workflows/test.yml`]
+- [x] [Review][Patch] `pnpm run build` unscoped in CI frontend-build step — runs root monorepo build instead of frontend only [`.github/workflows/test.yml`]
+- [ ] [Review][Patch] `taskService` in-memory singleton (`tasks` array + `nextId`) shared across test runs — test state bleeds between suites [`apps/backend/src/services/taskService.ts:9-10`]
+- [x] [Review][Patch] `db:migrate` script has `|| true` suffix — silently swallows Prisma migration failures in CI [`apps/backend/package.json`]
+- [ ] [Review][Patch] `useCreateTask` tests assert behavior by calling `.toString()` on the hook and grepping source text — breaks on minification, gives false confidence [`apps/frontend/src/hooks/useCreateTask.test.ts`]
+- [x] [Review][Patch] `Task.userId` typed as literal `null` instead of `string | null` or `number | null` — communicates no intent and requires a breaking type change for any user-association feature [`packages/shared-types/src/index.ts`]
+- [ ] [Review][Patch] `errorHandler` is a plain utility manually called in every route `catch` block instead of registered via `fastify.setErrorHandler` — errors outside try/catch (parsing, schema validation) are silently missed [`apps/backend/src/middleware/errorHandler.ts`]
+- [x] [Review][Patch] `shared-types/tsconfig.json` removes `extends` from base config and drops `composite: true` — breaks TypeScript project references needed for incremental monorepo builds [`packages/shared-types/tsconfig.json`]
+- [x] [Review][Patch] `MUTATION_PATTERNS.md` required by AC #4 / Task 6 is missing from the working tree [`apps/frontend/src/hooks/MUTATION_PATTERNS.md`]
+- [ ] [Review][Patch] `createTask` service does not guard against null/undefined request body — Fastify may pass undefined body if content-type is not JSON [`apps/backend/src/services/taskService.ts:27-41`]
+- [x] [Review][Patch] Empty PATCH body (neither `description` nor `completed`) silently succeeds — returns 200 and only updates `updatedAt` [`apps/backend/src/services/taskService.ts:43-60`]
+- [x] [Review][Patch] `req.completed` is not validated as a boolean — truthy/falsy values (0, 1, string) accepted via JSON coercion [`apps/backend/src/services/taskService.ts:54-56`]
+- [x] [Review][Patch] Floating-point ID (e.g. `"1.5"`) passes `parseInt` guard — `parseInt("1.5")` returns `1`, resolving to an unintended task on GET/PATCH/DELETE [`apps/backend/src/routes/tasks/index.ts:58-82`]
+- [ ] [Review][Patch] `retryDelay` in `queryClient.ts` falls through to retry when the thrown `Error` has no `.status` property — plain network errors retried 3 times but so are wrapped 400s without a `.status` field [`apps/frontend/src/config/queryClient.ts`]
+
+### Defer
+
+- [x] [Review][Defer] `useCreateTask.ts` `mutationFn` is a `setTimeout` stub — `onError`/rollback path is dead code until real fetch is wired [`apps/frontend/src/hooks/useCreateTask.ts`] — deferred, intentional example stub; real implementation in Story 4.x
+- [x] [Review][Defer] `/health` route `try/catch` is unreachable dead code — handler returns a static object, catch block can never fire [`apps/backend/src/index.ts`] — deferred, pre-existing
+- [x] [Review][Defer] Scope creep — backend REST API (routes, service, middleware, shared-types) committed under Story 2.3 — unrelated changes bundled in one commit — deferred, informational; no code defect
+- [x] [Review][Defer] `useCreateTask` optimistic update uses `taskKeys.lists()` but filtered queries use `taskKeys.list(filters)` — cache key mismatch when filters are active [`apps/frontend/src/hooks/useCreateTask.ts`] — deferred, stub hook; filters not implemented yet
+- [x] [Review][Defer] CORS `FRONTEND_URL` env var has no multi-origin support and no URL validation before passing to `@fastify/cors` [`apps/backend/src/index.ts`] — deferred, acceptable for current scope; revisit in deployment/hardening epic
 
 ## Change Log
 
