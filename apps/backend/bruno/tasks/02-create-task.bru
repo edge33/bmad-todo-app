@@ -1,0 +1,50 @@
+meta {
+  name: Create Task
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/tasks
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "description": "Bruno test task"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  bru.setVar("taskId", body.id);
+}
+
+tests {
+  test("Status is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  
+  test("Response has id", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("id");
+    expect(body.id).to.be.greaterThan(0);
+  });
+  
+  test("Description matches", function() {
+    const body = res.getBody();
+    expect(body.description).to.equal("Bruno test task");
+  });
+  
+  test("Task starts incomplete", function() {
+    const body = res.getBody();
+    expect(body.completed).to.equal(false);
+  });
+  
+  test("Has timestamps", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("createdAt");
+    expect(body).to.have.property("updatedAt");
+  });
+}

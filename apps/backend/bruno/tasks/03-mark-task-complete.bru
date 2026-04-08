@@ -1,0 +1,33 @@
+meta {
+  name: Mark Task Complete
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/tasks/{{taskId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "completed": true
+  }
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Task is marked complete", function() {
+    const body = res.getBody();
+    expect(body.completed).to.equal(true);
+  });
+  
+  test("Task id matches", function() {
+    const body = res.getBody();
+    expect(body.id).to.equal(bru.getVar("taskId"));
+  });
+}

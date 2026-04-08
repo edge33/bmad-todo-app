@@ -25,6 +25,32 @@ export default async function (fastify: FastifyInstance) {
     },
   );
 
+  // GET /:id - returns a single task by ID
+  fastify.get<{ Params: { id: string }; Reply: Task }>(
+    "/:id",
+    async (
+      req: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
+      try {
+        const id = parseInt(req.params.id, 10);
+        if (
+          Number.isNaN(id) ||
+          id < 1 ||
+          !Number.isInteger(Number(req.params.id))
+        ) {
+          throw new ValidationError("Task ID must be a positive integer");
+        }
+
+        const task = taskService.getById(id);
+        return task;
+      } catch (error) {
+        const { status, body } = errorHandler(error);
+        return reply.status(status).send(body);
+      }
+    },
+  );
+
   // POST / - creates a new task
   fastify.post<{ Body: CreateTaskRequest; Reply: Task }>(
     "/",
@@ -56,7 +82,11 @@ export default async function (fastify: FastifyInstance) {
     ) => {
       try {
         const id = parseInt(req.params.id, 10);
-        if (Number.isNaN(id) || id < 1 || !Number.isInteger(Number(req.params.id))) {
+        if (
+          Number.isNaN(id) ||
+          id < 1 ||
+          !Number.isInteger(Number(req.params.id))
+        ) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
@@ -78,12 +108,16 @@ export default async function (fastify: FastifyInstance) {
     ) => {
       try {
         const id = parseInt(req.params.id, 10);
-        if (Number.isNaN(id) || id < 1 || !Number.isInteger(Number(req.params.id))) {
+        if (
+          Number.isNaN(id) ||
+          id < 1 ||
+          !Number.isInteger(Number(req.params.id))
+        ) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
-        taskService.delete(id);
-        return reply.status(200).send();
+        const deleted = taskService.delete(id);
+        return deleted;
       } catch (error) {
         const { status, body } = errorHandler(error);
         return reply.status(status).send(body);

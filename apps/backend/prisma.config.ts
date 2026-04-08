@@ -3,7 +3,9 @@ import { defineConfig } from "prisma/config";
 
 // Load .env without dotenv — Prisma CLI runs this file via Node.js before any command
 try {
-  const lines = readFileSync(new URL(".env", import.meta.url), "utf8").split("\n");
+  const lines = readFileSync(new URL(".env", import.meta.url), "utf8").split(
+    "\n",
+  );
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
@@ -15,13 +17,22 @@ try {
     process.env[key] ??= val;
   }
 } catch (err: unknown) {
-  if (err instanceof Error && "code" in err && (err as NodeJS.ErrnoException).code !== "ENOENT") {
-    console.warn("[prisma.config] Failed to read .env:", (err as Error).message);
+  if (
+    err instanceof Error &&
+    "code" in err &&
+    (err as NodeJS.ErrnoException).code !== "ENOENT"
+  ) {
+    console.warn(
+      "[prisma.config] Failed to read .env:",
+      (err as Error).message,
+    );
   }
 }
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is not set. Provide it via .env or environment variables.");
+  throw new Error(
+    "DATABASE_URL is not set. Provide it via .env or environment variables.",
+  );
 }
 
 export default defineConfig({

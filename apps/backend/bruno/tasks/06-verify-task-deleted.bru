@@ -1,0 +1,15 @@
+meta {
+  name: Verify Task Deleted
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/tasks/{{taskId}}
+}
+
+tests {
+  test("Status is 404 — task no longer exists", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

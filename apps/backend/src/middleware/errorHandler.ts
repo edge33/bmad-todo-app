@@ -47,6 +47,7 @@ export function errorHandler(error: unknown): {
     };
   }
 
+  console.error(error);
   return {
     status: 500,
     body: {
