@@ -17,6 +17,14 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 5-2-delete-button-ui-interaction-model (2026-04-08)
+
+- **`waitForSelector` legacy API** — All tests use `await page.waitForSelector(...)` instead of the modern `await expect(page.locator(...)).toBeVisible()`. Not a bug, but retry semantics are weaker. Consider modernising in a future test-quality pass.
+- **`MOCK_TASKS` non-deterministic timestamps** — `new Date().toISOString()` evaluated at module parse time. No timestamp assertions currently, so harmless, but should use fixed ISO strings if snapshot/date tests are added.
+- **POST undo mock hardcoded to MOCK_TASKS[0]** — If a future test deletes task 2, the undo mock returns task 1 silently. Acceptable until tests cover multi-task delete scenarios.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.
