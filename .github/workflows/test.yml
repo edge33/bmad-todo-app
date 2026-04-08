@@ -158,7 +158,7 @@ jobs:
           exit 1
 
       - name: Run feature tests
-        run: cd apps/backend/bruno && npx bru run tasks --env ci --output results.xml --format junit
+        run: cd apps/backend/bruno && pnpm exec bru run tasks --env ci --output results.xml --format junit
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
           NODE_ENV: development
