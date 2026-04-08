@@ -35,6 +35,13 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 6-2-configure-prisma-orm-database-schema (2026-04-08)
+
+- **No graceful `$disconnect()` on server shutdown** — PrismaClient singleton has no shutdown hook. Add `prisma.$disconnect()` via Fastify `onClose` hook when PrismaClient is integrated into the server in Story 6.3.
+- **`description` column is unbounded TEXT** — No `CHECK` constraint or `@db.VarChar(N)` limit on `description`. Application-level validation to be addressed when routes use Prisma in Story 6.3.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

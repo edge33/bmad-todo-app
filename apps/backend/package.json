@@ -4,19 +4,27 @@
   "description": "Fastify backend API server",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/index.ts",
+    "dev": "node --env-file=.env --watch src/index.ts",
     "build": "echo 'no build required for backend'",
     "start": "node src/index.ts",
     "type-check": "tsc --noEmit",
     "test:unit": "NODE_ENV=test node --test src/**/*.test.ts",
-    "test:feature": "echo 'Feature tests placeholder - configure with Bruno or API testing tool'",
-    "db:migrate": "echo 'Running database migrations' && prisma migrate deploy || true"
+    "test:feature": "echo 'Feature tests placeholder'",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
+    "@prisma/client": "^7.7.0",
     "@todoapp/shared-types": "workspace:*",
     "@todoapp/shared-utils": "workspace:*",
     "fastify": "^5.8.4"
+  },
+  "devDependencies": {
+    "prisma": "^7.7.0"
   }
 }

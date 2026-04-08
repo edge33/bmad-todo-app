@@ -169,8 +169,8 @@ pnpm add -D -w typescript @types/node tsx
 - Graceful shutdown handling
 
 **Database Layer:**
-- Prisma ORM for PostgreSQL
-- Type-safe database access
+- Prisma ORM 7.x for PostgreSQL (configured via `prisma.config.ts`)
+- Type-safe database access with generated client (`generated/prisma/`)
 - Migration tools included
 - Shared types between ORM and API contracts
 
@@ -381,9 +381,18 @@ API Call (background, async)
 - Enables type-safe queries for future multi-user support
 - Prisma ORM handles this cleanly without complexity
 
-**Prisma Schema:**
+**Prisma Schema** (`apps/backend/prisma/schema.prisma`):
 
 ```prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
 model Task {
   id          Int       @id @default(autoincrement())
   userId      Int?      // NULL in v1, filled with authenticated user ID in Phase 2
@@ -395,6 +404,8 @@ model Task {
   @@index([userId])  // For Phase 2 queries
 }
 ```
+
+> **Note:** Prisma 7 moved datasource URL configuration from `schema.prisma` to `prisma.config.ts`. The `DATABASE_URL` is loaded from `.env` via `prisma.config.ts` at the project root (`apps/backend/prisma.config.ts`). The generated client outputs to `apps/backend/generated/prisma/` (gitignored) and is imported as `../../generated/prisma/client`.
 
 **Database Table (PostgreSQL):**
 
@@ -1771,9 +1782,14 @@ todoapp/
 │   └── backend/                       # Fastify + TypeScript API (Node 24)
 │       ├── package.json
 │       ├── tsconfig.json              # Extends tsconfig.base.json
+│       ├── prisma.config.ts           # Prisma 7 config (loads .env, sets datasource URL)
 │       ├── Dockerfile                 # Production: Node 24 native type stripping
 │       ├── .dockerignore
 │       ├── .env.example
+│       ├── generated/                 # Prisma generated client (gitignored)
+│       ├── prisma/
+│       │   ├── schema.prisma          # Prisma schema (Task model)
+│       │   └── migrations/            # SQL migration files (committed)
 │       │
 │       └── src/
 │           ├── server.ts              # Entry point (runs: node src/server.ts)
