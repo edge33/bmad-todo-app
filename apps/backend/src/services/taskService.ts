@@ -1,13 +1,28 @@
+import type { Task as PrismaTask } from "@prisma/client";
 import type {
   CreateTaskRequest,
   Task,
   UpdateTaskRequest,
 } from "@todoapp/shared-types";
+import { prisma } from "../db/prisma.ts";
 import { NotFoundError, ValidationError } from "../middleware/errorHandler.ts";
 
-// In-memory storage for MVP (will use Prisma in production)
-const tasks: Task[] = [];
-let nextId = 1;
+function isPrismaNotFound(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: string }).code === "P2025"
+  );
+}
+
+function formatTask(prismaTask: PrismaTask): Task {
+  return {
+    ...prismaTask,
+    createdAt: prismaTask.createdAt.toISOString(),
+    updatedAt: prismaTask.updatedAt.toISOString(),
+  };
+}
 
 function validateDescription(description: unknown): string {
   if (typeof description !== "string") {
@@ -20,69 +35,69 @@ function validateDescription(description: unknown): string {
 }
 
 export const taskService = {
-  getAll(): Task[] {
-    return tasks;
+  async getAll(): Promise<Task[]> {
+    const tasks = await prisma.task.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return tasks.map(formatTask);
   },
 
-  getById(id: number): Task {
-    const task = tasks.find((t) => t.id === id);
+  async getById(id: number): Promise<Task> {
+    const task = await prisma.task.findUnique({ where: { id } });
     if (!task) {
       throw new NotFoundError("Task", id);
     }
-    return task;
+    return formatTask(task);
   },
 
-  create(req: CreateTaskRequest): Task {
+  async create(req: CreateTaskRequest): Promise<Task> {
     const description = validateDescription(req.description);
-
-    const task: Task = {
-      id: nextId++,
-      description,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      userId: null,
-    };
-
-    tasks.push(task);
-    return task;
+    const task = await prisma.task.create({
+      data: { description },
+    });
+    return formatTask(task);
   },
 
-  update(id: number, req: UpdateTaskRequest): Task {
-    const task = tasks.find((t) => t.id === id);
-    if (!task) {
-      throw new NotFoundError("Task", id);
-    }
-
+  async update(id: number, req: UpdateTaskRequest): Promise<Task> {
     if (req.description === undefined && req.completed === undefined) {
       throw new ValidationError(
         "At least one field (description or completed) must be provided",
       );
     }
 
+    const data: { description?: string; completed?: boolean } = {};
+
     if (req.description !== undefined) {
-      const description = validateDescription(req.description);
-      task.description = description;
+      data.description = validateDescription(req.description);
     }
 
     if (req.completed !== undefined) {
       if (typeof req.completed !== "boolean") {
         throw new ValidationError("completed must be a boolean");
       }
-      task.completed = req.completed;
+      data.completed = req.completed;
     }
 
-    task.updatedAt = new Date().toISOString();
-    return task;
+    try {
+      const task = await prisma.task.update({ where: { id }, data });
+      return formatTask(task);
+    } catch (error: unknown) {
+      if (isPrismaNotFound(error)) {
+        throw new NotFoundError("Task", id);
+      }
+      throw error;
+    }
   },
 
-  delete(id: number): Task {
-    const index = tasks.findIndex((t) => t.id === id);
-    if (index === -1) {
-      throw new NotFoundError("Task", id);
+  async delete(id: number): Promise<Task> {
+    try {
+      const task = await prisma.task.delete({ where: { id } });
+      return formatTask(task);
+    } catch (error: unknown) {
+      if (isPrismaNotFound(error)) {
+        throw new NotFoundError("Task", id);
+      }
+      throw error;
     }
-
-    const deleted = tasks.splice(index, 1)[0] as Task;
-    return deleted;
   },
 };
