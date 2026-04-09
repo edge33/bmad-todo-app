@@ -9,7 +9,7 @@ datasource db {
 model Task {
   id          Int       @id @default(autoincrement())
   userId      Int?      // NULL in v1, filled with authenticated user ID in Phase 2
-  description String
+  description String    @unique
   completed   Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
