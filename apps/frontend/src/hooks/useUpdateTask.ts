@@ -51,7 +51,9 @@ export const useUpdateTask = () => {
       if (import.meta.env.DEV) {
         console.error("[useUpdateTask] mutation error:", error);
       }
-      notifyErrorToast(mapErrorToUserMessage(error), () => mutation.mutate(vars));
+      notifyErrorToast(mapErrorToUserMessage(error), () =>
+        mutation.mutate(vars),
+      );
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });

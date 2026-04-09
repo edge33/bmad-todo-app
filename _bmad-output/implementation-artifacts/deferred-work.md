@@ -60,6 +60,14 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 9-1-accessibility-and-polish (2026-04-09)
+
+- **FOUC: dark mode init in module script, not blocking `<script>`** — `initializeDarkMode()` in main.tsx runs after HTML parse, causing brief light flash for dark-mode users. Fix requires inline script in index.html `<head>`.
+- **Multiple useDarkMode instances would desync** — Hook uses local `useState`; only one consumer today (DarkModeToggle). If reused, instances won't share state. Consider context or external store if more consumers are needed.
+- **Emoji ✅ replaces SVG checkmark** — Inconsistent rendering across OS/browser, noisier for screen readers. Design decision already validated via Chrome MCP.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

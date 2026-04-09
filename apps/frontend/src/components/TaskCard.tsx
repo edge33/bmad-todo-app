@@ -28,20 +28,6 @@ const spinnerIcon = (
   </svg>
 );
 
-const checkIcon = (
-  <svg
-    aria-hidden
-    className="h-5 w-5 shrink-0 text-emerald-700"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
-    <title>Completed</title>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-  </svg>
-);
-
 const trashIcon = (
   <svg
     aria-hidden
@@ -97,13 +83,16 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
         disabled={isBlocked}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
-        className="task-card-active flex min-h-[44px] w-full cursor-pointer items-start gap-3 rounded-xl border border-violet-100 bg-[#F5F3FF] p-4 text-left transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60"
+        className="task-card-active flex min-h-[44px] w-full cursor-pointer items-start gap-3 rounded-[10px] bg-white px-4 py-[14px] text-left shadow-sm transition-all hover:translate-x-1 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60 dark:bg-slate-700 dark:shadow-slate-900/20 dark:text-slate-100"
       >
         <div className="min-w-0 flex-1">
-          <span className="block text-base text-gray-900">
+          <span className="block truncate text-base text-[#4a4a4a] dark:text-slate-100">
             {task.description}
           </span>
-          <time dateTime={task.createdAt} className="text-sm text-gray-400">
+          <time
+            dateTime={task.createdAt}
+            className="text-sm text-gray-500 dark:text-slate-400"
+          >
             {formatRelativeTime(task.createdAt)}
           </time>
         </div>
@@ -120,7 +109,7 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
           e.stopPropagation();
           onDelete(task.id);
         }}
-        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
+        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
       >
         {trashIcon}
       </button>
@@ -143,28 +132,31 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
 
   return (
     <div className="group relative">
-      <article
+      <button
+        type="button"
+        aria-label={`Completed task: ${task.description}`}
         data-testid={`completed-task-${task.id}`}
-        className={`task-card-completed flex min-h-[44px] items-start gap-3 rounded-xl border border-gray-100 bg-white p-4 pl-3 opacity-[0.78] transition-shadow hover:shadow-md ${
+        className={`task-card-completed flex min-h-[44px] w-full cursor-default items-center gap-3 rounded-[10px] bg-white px-4 py-[14px] pl-3 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-slate-800 ${
           playEntrance ? "task-complete-enter" : ""
         }`}
         style={{ borderLeftWidth: 4, borderLeftColor: "#22c55e" }}
       >
+        <span className="shrink-0 text-lg" aria-hidden>
+          ✅
+        </span>
         <div className="min-w-0 flex-1">
-          <span className="block text-base text-[#2d5a3d]">
+          <span className="block truncate text-base font-medium text-[#2d5a3d] dark:text-emerald-300">
             {task.description}
           </span>
-          <time dateTime={task.createdAt} className="text-sm text-[#5a8a6d]">
+          <time
+            dateTime={task.createdAt}
+            className="text-sm text-[#3d7a5a] dark:text-emerald-400"
+          >
             {formatRelativeTime(task.createdAt)}
           </time>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="inline-flex shrink-0 text-emerald-800" aria-hidden>
-            {checkIcon}
-          </span>
-          <div className="w-10" />
-        </div>
-      </article>
+        <div className="w-10 shrink-0" />
+      </button>
       <button
         type="button"
         aria-label={`Delete task: ${task.description}`}
@@ -174,7 +166,7 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
           e.stopPropagation();
           onDelete(task.id);
         }}
-        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
+        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
       >
         {trashIcon}
       </button>

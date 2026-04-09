@@ -9,14 +9,14 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("input field is visible on desktop", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     await expect(input).toBeVisible();
   });
 
   test("input field is visible on mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     await expect(input).toBeVisible();
   });
 
@@ -24,7 +24,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("placeholder reads 'Add a task...'", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     await expect(input).toHaveAttribute("placeholder", "Add a task...");
   });
 
@@ -35,7 +35,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
   }) => {
     await page.goto("/");
     const label = `E2E-create-${Date.now()}`;
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     await input.fill(label);
     await input.press("Enter");
@@ -54,7 +54,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
   }) => {
     await page.goto("/");
     const label = `E2E-optimistic-${Date.now()}`;
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     // Delay POST response to create a window to observe the optimistic update
     await page.route("**/api/tasks", async (route) => {
@@ -79,7 +79,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("empty input (no text) does not create a task", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     let postCalled = false;
     await page.route("**/api/tasks", async (route) => {
@@ -95,7 +95,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("whitespace-only input does not create a task", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     let postCalled = false;
     await page.route("**/api/tasks", async (route) => {
@@ -114,7 +114,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
     // Unique prefix so repeated runs don't collide in the DB
     const prefix = `E2E-500-${Date.now()}-`;
     const label = prefix + "A".repeat(500 - prefix.length);
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     await input.fill(label);
     await input.press("Enter");
@@ -130,7 +130,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("input has maxLength=500 attribute", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     await expect(input).toHaveAttribute("maxlength", "500");
   });
 
@@ -138,7 +138,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("Escape key clears the input field", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     await input.fill("some text to clear");
     await expect(input).toHaveValue("some text to clear");
@@ -149,7 +149,7 @@ test.describe("Story 4.1: Task Input & Creation", () => {
 
   test("Tab key moves focus away from input", async ({ page }) => {
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     await input.click();
     await expect(input).toBeFocused();
@@ -164,18 +164,22 @@ test.describe("Story 4.1: Task Input & Creation", () => {
     page,
   }) => {
     await page.goto("/");
+    // Wait for initial task list to load so the query cache is populated
+    // (ensures onError rollback has previousData to restore)
+    await expect(page.locator('[data-testid^="active-task-"]').first()).toBeVisible({ timeout: 10_000 });
+
     const label = `E2E-retry-${Date.now()}`;
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     // Make POST fail — brief delay lets React render the optimistic task before rollback
     await page.route("**/api/tasks", async (route) => {
       if (route.request().method() === "POST") {
-        await new Promise((resolve) => setTimeout(resolve, 150));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
           body: JSON.stringify({
-            error: { code: "INTERNAL_ERROR", message: "Simulated failure" },
+            error: { code: "VALIDATION_ERROR", message: "Simulated failure" },
           }),
         });
         return;

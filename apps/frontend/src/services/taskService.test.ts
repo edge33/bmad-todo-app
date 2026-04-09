@@ -3,7 +3,11 @@ import { ApiError, mapErrorToUserMessage } from "./taskService.ts";
 
 describe("mapErrorToUserMessage", () => {
   test("maps VALIDATION_ERROR code to input error message", (t: TestContext) => {
-    const error = new ApiError(400, "Task description cannot be empty", "VALIDATION_ERROR");
+    const error = new ApiError(
+      400,
+      "Task description cannot be empty",
+      "VALIDATION_ERROR",
+    );
     t.assert.strictEqual(
       mapErrorToUserMessage(error),
       "Please check your input and try again",

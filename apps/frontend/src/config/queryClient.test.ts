@@ -2,19 +2,19 @@ import { describe, type TestContext, test } from "node:test";
 import { ApiError } from "../services/taskService.ts";
 import { queryClient } from "./queryClient.ts";
 
-const queryDefaults = queryClient.getDefaultOptions().queries!;
-const mutationDefaults = queryClient.getDefaultOptions().mutations!;
+const queryDefaults = queryClient.getDefaultOptions().queries;
+const mutationDefaults = queryClient.getDefaultOptions().mutations;
 
 describe("queryClient retry config", () => {
   // ============================================================================
   // Query retry
   // ============================================================================
   describe("queries", () => {
-    const retryFn = queryDefaults.retry as (
+    const retryFn = queryDefaults?.retry as (
       failureCount: number,
       error: unknown,
     ) => boolean;
-    const retryDelay = queryDefaults.retryDelay as (
+    const retryDelay = queryDefaults?.retryDelay as (
       attemptIndex: number,
     ) => number;
 
@@ -54,11 +54,11 @@ describe("queryClient retry config", () => {
   // Mutation retry
   // ============================================================================
   describe("mutations", () => {
-    const retryFn = mutationDefaults.retry as (
+    const retryFn = mutationDefaults?.retry as (
       failureCount: number,
       error: unknown,
     ) => boolean;
-    const retryDelay = mutationDefaults.retryDelay as (
+    const retryDelay = mutationDefaults?.retryDelay as (
       attemptIndex: number,
     ) => number;
 

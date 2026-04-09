@@ -18,7 +18,9 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   if (isLoading) {
     return (
       <section className="space-y-3" aria-busy="true">
-        <h2 className="text-xl font-semibold text-gray-800">Tasks</h2>
+        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+          {"📝 Your Tasks"}
+        </h2>
         <LoadingSpinner />
       </section>
     );
@@ -27,7 +29,9 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   if (error) {
     return (
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold text-gray-800">Tasks</h2>
+        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+          {"📝 Your Tasks"}
+        </h2>
         <ErrorMessage error={error} />
       </section>
     );
@@ -37,13 +41,15 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-xl font-semibold text-gray-800">Tasks</h2>
+      <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+        {"📝 Your Tasks"}
+      </h2>
       {active.length === 0 ? (
-        <div className="rounded-lg bg-white p-6 text-center text-gray-400">
+        <div className="rounded-lg bg-white p-6 text-center text-gray-400 dark:bg-slate-800 dark:text-slate-400">
           No tasks yet. Add one to get started.
         </div>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-2.5">
           {active.map((task) => (
             <li key={task.id}>
               <ActiveTaskCard

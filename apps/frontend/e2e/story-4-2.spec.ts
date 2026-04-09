@@ -13,11 +13,11 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     await page.route("**/api/tasks", async (route) => {
       if (route.request().method() === "POST") {
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
           body: JSON.stringify({
             success: false,
-            error: { code: "INTERNAL_ERROR", message: "Simulated failure" },
+            error: { code: "VALIDATION_ERROR", message: "Simulated failure" },
           }),
         });
         return;
@@ -27,7 +27,7 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
 
     await page.goto("/");
     const label = `E2E-4-2-toast-${Date.now()}`;
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
 
     await input.fill(label);
     await input.press("Enter");
@@ -43,9 +43,9 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     await page.route("**/api/tasks", async (route) => {
       if (route.request().method() === "POST") {
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "ERR" } }),
+          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
         });
         return;
       }
@@ -53,7 +53,7 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     });
 
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     // Label must not contain "retry" or "dismiss" — avoids false substring matches in role queries
     await input.fill(`E2E-4-2-fail-btn-${Date.now()}`);
     await input.press("Enter");
@@ -74,12 +74,12 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
   }) => {
     await page.route("**/api/tasks", async (route) => {
       if (route.request().method() === "POST") {
-        // Small delay so optimistic task renders before rollback
-        await new Promise((resolve) => setTimeout(resolve, 150));
+        // Delay so optimistic task renders before rollback
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "ERR" } }),
+          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
         });
         return;
       }
@@ -87,8 +87,11 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     });
 
     await page.goto("/");
+    // Wait for initial task list to load so the query cache is populated
+    await expect(page.locator('[data-testid^="active-task-"]').first()).toBeVisible({ timeout: 10_000 });
+
     const label = `E2E-4-2-rollback-${Date.now()}`;
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     await input.fill(label);
     await input.press("Enter");
 
@@ -112,9 +115,9 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
       if (route.request().method() === "POST") {
         postCount++;
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "ERR" } }),
+          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
         });
         return;
       }
@@ -122,7 +125,7 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     });
 
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     // Label must not contain "retry" — avoids role query false matches
     await input.fill(`E2E-4-2-click-${Date.now()}`);
     await input.press("Enter");
@@ -150,9 +153,9 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
       if (route.request().method() === "POST") {
         postCount++;
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "ERR" } }),
+          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
         });
         return;
       }
@@ -160,7 +163,7 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
     });
 
     await page.goto("/");
-    const input = page.getByLabel("Add task description");
+    const input = page.getByLabel("Add Task");
     // Label must not contain "dismiss" — avoids role query false matches
     await input.fill(`E2E-4-2-close-${Date.now()}`);
     await input.press("Enter");

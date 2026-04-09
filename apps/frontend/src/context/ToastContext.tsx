@@ -61,7 +61,7 @@ function ToastViewport() {
     return (
       <div
         role="alert"
-        className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-red-200 bg-white px-4 py-3 text-sm text-red-800 shadow-lg"
+        className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-red-200 bg-white px-4 py-3 text-sm text-red-800 shadow-lg dark:border-red-800 dark:bg-slate-800 dark:text-red-300"
       >
         <span>{toast.message}</span>
         {toast.onRetry && (
@@ -94,13 +94,13 @@ function ToastViewport() {
       role="status"
       aria-live="polite"
       aria-label={label}
-      className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-lg"
+      className="fixed bottom-4 left-1/2 z-50 flex max-w-md -translate-x-1/2 items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 shadow-lg dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
     >
       <span>{label}</span>
       <button
         type="button"
         disabled={isPending}
-        className="min-h-[44px] min-w-[44px] rounded-md bg-indigo-600 px-3 py-2 font-medium text-white disabled:opacity-50"
+        className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md bg-indigo-600 px-3 py-2 font-medium text-white disabled:opacity-50"
         onClick={() => {
           if (toast.action === "delete") {
             createTaskMutate(
@@ -119,7 +119,7 @@ function ToastViewport() {
       </button>
       <button
         type="button"
-        className="min-h-[44px] min-w-[44px] rounded-md px-2 text-gray-600 underline"
+        className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md px-2 text-gray-600 underline"
         onClick={dismiss}
       >
         Dismiss
