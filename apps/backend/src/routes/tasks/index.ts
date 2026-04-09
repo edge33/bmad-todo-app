@@ -19,7 +19,7 @@ export default async function (fastify: FastifyInstance) {
         const tasks = await taskService.getAll();
         return tasks;
       } catch (error) {
-        const { status, body } = errorHandler(error);
+        const { status, body } = errorHandler(error, { action: "getAll" });
         return reply.status(status).send(body);
       }
     },
@@ -32,20 +32,20 @@ export default async function (fastify: FastifyInstance) {
       req: FastifyRequest<{ Params: { id: string } }>,
       reply: FastifyReply,
     ) => {
+      const id = parseInt(req.params.id, 10);
+      const validId = !Number.isNaN(id) && id >= 1 && Number.isInteger(Number(req.params.id));
       try {
-        const id = parseInt(req.params.id, 10);
-        if (
-          Number.isNaN(id) ||
-          id < 1 ||
-          !Number.isInteger(Number(req.params.id))
-        ) {
+        if (!validId) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
         const task = await taskService.getById(id);
         return task;
       } catch (error) {
-        const { status, body } = errorHandler(error);
+        const { status, body } = errorHandler(error, {
+          action: "getById",
+          ...(validId ? { taskId: id } : {}),
+        });
         return reply.status(status).send(body);
       }
     },
@@ -63,7 +63,7 @@ export default async function (fastify: FastifyInstance) {
         reply.status(201);
         return task;
       } catch (error) {
-        const { status, body } = errorHandler(error);
+        const { status, body } = errorHandler(error, { action: "create" });
         return reply.status(status).send(body);
       }
     },
@@ -80,20 +80,20 @@ export default async function (fastify: FastifyInstance) {
       req: FastifyRequest<{ Params: { id: string }; Body: UpdateTaskRequest }>,
       reply: FastifyReply,
     ) => {
+      const id = parseInt(req.params.id, 10);
+      const validId = !Number.isNaN(id) && id >= 1 && Number.isInteger(Number(req.params.id));
       try {
-        const id = parseInt(req.params.id, 10);
-        if (
-          Number.isNaN(id) ||
-          id < 1 ||
-          !Number.isInteger(Number(req.params.id))
-        ) {
+        if (!validId) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
         const task = await taskService.update(id, req.body);
         return task;
       } catch (error) {
-        const { status, body } = errorHandler(error);
+        const { status, body } = errorHandler(error, {
+          action: "update",
+          ...(validId ? { taskId: id } : {}),
+        });
         return reply.status(status).send(body);
       }
     },
@@ -106,20 +106,20 @@ export default async function (fastify: FastifyInstance) {
       req: FastifyRequest<{ Params: { id: string } }>,
       reply: FastifyReply,
     ) => {
+      const id = parseInt(req.params.id, 10);
+      const validId = !Number.isNaN(id) && id >= 1 && Number.isInteger(Number(req.params.id));
       try {
-        const id = parseInt(req.params.id, 10);
-        if (
-          Number.isNaN(id) ||
-          id < 1 ||
-          !Number.isInteger(Number(req.params.id))
-        ) {
+        if (!validId) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
         const deleted = await taskService.delete(id);
         return deleted;
       } catch (error) {
-        const { status, body } = errorHandler(error);
+        const { status, body } = errorHandler(error, {
+          action: "delete",
+          ...(validId ? { taskId: id } : {}),
+        });
         return reply.status(status).send(body);
       }
     },

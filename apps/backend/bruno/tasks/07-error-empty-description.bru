@@ -1,0 +1,36 @@
+meta {
+  name: Error - Empty Description
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/tasks
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "description": ""
+  }
+}
+
+tests {
+  test("Status is 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("Error code is VALIDATION_ERROR", function() {
+    const body = res.getBody();
+    expect(body.error.code).to.equal("VALIDATION_ERROR");
+  });
+
+  test("Error response has code and message", function() {
+    const body = res.getBody();
+    expect(body.error).to.have.property("code");
+    expect(body.error).to.have.property("message");
+    expect(typeof body.error.code).to.equal("string");
+    expect(typeof body.error.message).to.equal("string");
+  });
+}

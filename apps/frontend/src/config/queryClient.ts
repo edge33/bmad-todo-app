@@ -35,7 +35,18 @@ export const queryClient = new QueryClient({
       },
     },
     mutations: {
-      retry: 0, // Don't retry mutations by default
+      retry: (failureCount, error) => {
+        if (
+          error instanceof Error &&
+          "status" in error &&
+          typeof (error as { status?: unknown }).status === "number"
+        ) {
+          const status = (error as { status: number }).status;
+          if (status >= 400 && status < 500) return false;
+        }
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },
   },
 });

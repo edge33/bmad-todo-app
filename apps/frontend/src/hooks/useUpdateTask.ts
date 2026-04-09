@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Task, UpdateTaskRequest } from "@todoapp/shared-types";
 import { notifyErrorToast, notifyUndoToast } from "../lib/toastBridge.ts";
-import { updateTask } from "../services/taskService.ts";
+import { mapErrorToUserMessage, updateTask } from "../services/taskService.ts";
 import { taskKeys } from "./queryKeys.ts";
 
 export type UpdateTaskVars = { id: number } & UpdateTaskRequest;
@@ -30,7 +30,7 @@ function mapTaskList(
 export const useUpdateTask = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: ({ id, ...body }: UpdateTaskVars) => updateTask(id, body),
     onMutate: async (vars) => {
       await queryClient.cancelQueries({ queryKey: taskKeys.lists() });
@@ -44,13 +44,14 @@ export const useUpdateTask = () => {
       });
       return { previousData };
     },
-    onError: (error, _vars, context) => {
+    onError: (error, vars, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(taskKeys.lists(), context.previousData);
       }
-      const message =
-        error instanceof Error ? error.message : "Failed to update task.";
-      notifyErrorToast(message);
+      if (import.meta.env.DEV) {
+        console.error("[useUpdateTask] mutation error:", error);
+      }
+      notifyErrorToast(mapErrorToUserMessage(error), () => mutation.mutate(vars));
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
@@ -63,4 +64,5 @@ export const useUpdateTask = () => {
       }
     },
   });
+  return mutation;
 };

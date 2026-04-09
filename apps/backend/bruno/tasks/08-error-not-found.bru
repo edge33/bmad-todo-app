@@ -1,0 +1,27 @@
+meta {
+  name: Error - Task Not Found
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/tasks/99999999
+  auth: none
+}
+
+tests {
+  test("Status is 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("Error code is NOT_FOUND", function() {
+    const body = res.getBody();
+    expect(body.error.code).to.equal("NOT_FOUND");
+  });
+
+  test("Error response has code and message", function() {
+    const body = res.getBody();
+    expect(body.error).to.have.property("code");
+    expect(body.error).to.have.property("message");
+  });
+}

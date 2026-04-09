@@ -19,7 +19,15 @@ interface ErrorResponse {
   };
 }
 
-export function errorHandler(error: unknown): {
+export interface ErrorContext {
+  action: string;
+  taskId?: number;
+}
+
+export function errorHandler(
+  error: unknown,
+  context?: ErrorContext,
+): {
   status: number;
   body: ErrorResponse;
 } {
@@ -47,7 +55,13 @@ export function errorHandler(error: unknown): {
     };
   }
 
-  console.error(error);
+  const logEntry: Record<string, unknown> = {
+    err: error instanceof Error ? { message: error.message, stack: error.stack } : error,
+    ...(context?.action !== undefined ? { action: context.action } : {}),
+    ...(context?.taskId !== undefined ? { taskId: context.taskId } : {}),
+  };
+  console.error(logEntry, "Internal server error");
+
   return {
     status: 500,
     body: {

@@ -1,3 +1,4 @@
+import { useIsMutating } from "@tanstack/react-query";
 import type React from "react";
 import { useState } from "react";
 import { useCreateTask } from "../hooks/useCreateTask.ts";
@@ -5,6 +6,8 @@ import { useCreateTask } from "../hooks/useCreateTask.ts";
 export const TaskInput: React.FC = () => {
   const [value, setValue] = useState("");
   const { mutate: createTask, isPending } = useCreateTask();
+  const isMutating = useIsMutating() > 0;
+  const isDisabled = isPending || isMutating;
 
   const handleSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") {
@@ -12,7 +15,7 @@ export const TaskInput: React.FC = () => {
     }
     e.preventDefault();
     const description = value.trim();
-    if (!description || isPending || description.length > 500) {
+    if (!description || isDisabled || description.length > 500) {
       return;
     }
     createTask(
@@ -36,7 +39,7 @@ export const TaskInput: React.FC = () => {
       type="text"
       placeholder="Add a task..."
       value={value}
-      disabled={isPending}
+      disabled={isDisabled}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={(e) => {
         handleSubmit(e);

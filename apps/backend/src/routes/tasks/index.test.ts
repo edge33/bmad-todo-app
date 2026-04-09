@@ -1,5 +1,6 @@
 import {
   after,
+  afterEach,
   before,
   beforeEach,
   describe,
@@ -447,5 +448,103 @@ describe("Tasks API", async () => {
       true,
       "Task should be deleted",
     );
+  });
+
+  // ============================================================================
+  // AC: 500 INTERNAL_ERROR for unexpected failures
+  // ============================================================================
+
+  describe("500 INTERNAL_ERROR on unexpected DB failures", () => {
+    const originalFindMany = mockPrisma.task.findMany;
+    const originalFindUnique = mockPrisma.task.findUnique;
+    const originalCreate = mockPrisma.task.create;
+    const originalUpdate = mockPrisma.task.update;
+    const originalDelete = mockPrisma.task.delete;
+
+    afterEach(() => {
+      mockPrisma.task.findMany = originalFindMany;
+      mockPrisma.task.findUnique = originalFindUnique;
+      mockPrisma.task.create = originalCreate;
+      mockPrisma.task.update = originalUpdate;
+      mockPrisma.task.delete = originalDelete;
+    });
+
+    test("GET /api/tasks returns 500 on unexpected DB failure", async (t: TestContext) => {
+      mockPrisma.task.findMany = async () => {
+        throw new Error("DB connection lost");
+      };
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/api/tasks",
+      });
+
+      t.assert.strictEqual(response.statusCode, 500);
+      const body = JSON.parse(response.body);
+      t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
+      t.assert.strictEqual(body.error.message, "Internal server error");
+    });
+
+    test("POST /api/tasks returns 500 on unexpected DB failure", async (t: TestContext) => {
+      mockPrisma.task.create = async () => {
+        throw new Error("Disk full");
+      };
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/tasks",
+        payload: { description: "Should fail" },
+      });
+
+      t.assert.strictEqual(response.statusCode, 500);
+      const body = JSON.parse(response.body);
+      t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
+    });
+
+    test("GET /api/tasks/:id returns 500 on unexpected DB failure", async (t: TestContext) => {
+      mockPrisma.task.findUnique = async () => {
+        throw new Error("DB timeout");
+      };
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/api/tasks/1",
+      });
+
+      t.assert.strictEqual(response.statusCode, 500);
+      const body = JSON.parse(response.body);
+      t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
+    });
+
+    test("PATCH /api/tasks/:id returns 500 on unexpected DB failure", async (t: TestContext) => {
+      mockPrisma.task.update = async () => {
+        throw new Error("DB timeout");
+      };
+
+      const response = await app.inject({
+        method: "PATCH",
+        url: "/api/tasks/1",
+        payload: { completed: true },
+      });
+
+      t.assert.strictEqual(response.statusCode, 500);
+      const body = JSON.parse(response.body);
+      t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
+    });
+
+    test("DELETE /api/tasks/:id returns 500 on unexpected DB failure", async (t: TestContext) => {
+      mockPrisma.task.delete = async () => {
+        throw new Error("DB timeout");
+      };
+
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/api/tasks/1",
+      });
+
+      t.assert.strictEqual(response.statusCode, 500);
+      const body = JSON.parse(response.body);
+      t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
+    });
   });
 });

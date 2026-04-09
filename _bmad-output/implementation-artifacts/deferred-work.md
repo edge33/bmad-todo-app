@@ -52,6 +52,14 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 7-1-error-handling-retry-user-feedback (2026-04-09)
+
+- **mapErrorToUserMessage OR condition may produce misleading messages for future error codes** — `error.code === "VALIDATION_ERROR" || error.status === 400` means any future 400 with a different code maps to "check your input". Pre-existing design decision; revisit if new error codes are added.
+- **console.error bypasses Fastify's structured logger** — `errorHandler.ts` uses `console.error` directly instead of the Fastify request logger, so errors won't carry request-level context (request ID, etc.) in structured log output. Pre-existing pattern; address in logging/observability epic.
+- **Dev-mode logging absent from service/fetch layer** — `console.error` guards added only to hooks; fetch/parse errors in `taskService.ts` are not logged in dev. Pre-existing; address in observability pass.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

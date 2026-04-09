@@ -18,6 +18,18 @@ export class ApiError extends Error {
   }
 }
 
+export function mapErrorToUserMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.code === "VALIDATION_ERROR" || error.status === 400) {
+      return "Please check your input and try again";
+    }
+    if (error.code === "NOT_FOUND" || error.status === 404) {
+      return "This task no longer exists";
+    }
+  }
+  return "Something went wrong. Please try again.";
+}
+
 async function parseResponseError(res: Response): Promise<ApiError> {
   try {
     const body = (await res.json()) as {
