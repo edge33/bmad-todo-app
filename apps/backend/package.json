@@ -8,8 +8,8 @@
     "build": "echo 'no build required for backend'",
     "start": "node src/index.ts",
     "type-check": "tsc --noEmit",
-    "test:unit": "NODE_ENV=test node --test --experimental-test-coverage src/**/*.test.ts",
-    "test:unit:ci": "NODE_ENV=test c8 --reporter=lcov --reporter=text --reports-dir=coverage node --test src/**/*.test.ts",
+    "test:unit": "NODE_ENV=test node --test --experimental-test-coverage --experimental-test-module-mocks $(find src -name '*.test.ts')",
+    "test:unit:ci": "NODE_ENV=test c8 --reporter=lcov --reporter=text --reports-dir=coverage node --test --experimental-test-module-mocks $(find src -name '*.test.ts')",
     "test:feature": "cd bruno && bru run tasks --env local --output results.xml --format junit",
     "test:feature:ci": "cd bruno && bru run tasks --env ci --output results.xml --format junit",
     "db:migrate": "prisma migrate deploy",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
+    "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "@todoapp/shared-types": "workspace:*",
     "@todoapp/shared-utils": "workspace:*",

@@ -42,6 +42,16 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 6-3-implement-task-service-prisma (2026-04-09)
+
+- **No SIGTERM/SIGINT handler for `prisma.$disconnect()`** — Only the Fastify `onClose` hook is registered. If the process is killed before `fastify.close()` is called (e.g. container kill), the connection pool is never released. Pre-existing concern; acceptable for current scope.
+- **Shell `$(find ...)` in package.json not portable to Windows** — Known workaround for pnpm not expanding `**` globs in scripts. Acceptable for Mac/Linux-only dev environments; revisit if Windows support is needed.
+- **Non-P2025 Prisma errors re-thrown without sanitization** — Errors like `P1001` (unreachable DB) or `P2024` (pool timeout) surface as raw Prisma error objects through `errorHandler`. Whether internal details leak depends on `errorHandler` serialization. Pre-existing; address in hardening epic.
+- **ID param `"1."` silently coerces to `1`** — `parseInt("1.", 10)` returns `1`; `Number.isInteger(Number("1."))` returns `true`. Not introduced by this change; pre-existing in route validation logic.
+- **PrismaPg adapter pool may not be fully released on `$disconnect()`** — Low severity; the `@prisma/adapter-pg` pool cleanup behavior under disconnect warrants verification in load/stress testing.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

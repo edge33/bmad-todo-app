@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import autoload from "@fastify/autoload";
 import cors from "@fastify/cors";
 import Fastify from "fastify";
+import { prisma } from "./db/prisma.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,6 +29,11 @@ export const createApp = async () => {
         error: err instanceof Error ? err.message : "Unknown error",
       };
     }
+  });
+
+  // Graceful Prisma disconnect on server shutdown
+  fastify.addHook("onClose", async () => {
+    await prisma.$disconnect();
   });
 
   // Register routes with autoload (must be last)

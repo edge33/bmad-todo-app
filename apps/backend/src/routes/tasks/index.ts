@@ -16,7 +16,7 @@ export default async function (fastify: FastifyInstance) {
     "/",
     async (_req: FastifyRequest<{ Reply: Task[] }>, reply: FastifyReply) => {
       try {
-        const tasks = taskService.getAll();
+        const tasks = await taskService.getAll();
         return tasks;
       } catch (error) {
         const { status, body } = errorHandler(error);
@@ -42,7 +42,7 @@ export default async function (fastify: FastifyInstance) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
-        const task = taskService.getById(id);
+        const task = await taskService.getById(id);
         return task;
       } catch (error) {
         const { status, body } = errorHandler(error);
@@ -59,7 +59,7 @@ export default async function (fastify: FastifyInstance) {
       reply: FastifyReply,
     ) => {
       try {
-        const task = taskService.create(req.body);
+        const task = await taskService.create(req.body);
         reply.status(201);
         return task;
       } catch (error) {
@@ -90,7 +90,7 @@ export default async function (fastify: FastifyInstance) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
-        const task = taskService.update(id, req.body);
+        const task = await taskService.update(id, req.body);
         return task;
       } catch (error) {
         const { status, body } = errorHandler(error);
@@ -116,7 +116,7 @@ export default async function (fastify: FastifyInstance) {
           throw new ValidationError("Task ID must be a positive integer");
         }
 
-        const deleted = taskService.delete(id);
+        const deleted = await taskService.delete(id);
         return deleted;
       } catch (error) {
         const { status, body } = errorHandler(error);

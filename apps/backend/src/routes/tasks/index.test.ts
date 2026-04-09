@@ -1,16 +1,100 @@
-import { after, before, describe, type TestContext, test } from "node:test";
+import {
+  after,
+  before,
+  beforeEach,
+  describe,
+  type TestContext,
+  test,
+} from "node:test";
 import type { Task } from "@todoapp/shared-types";
 import type { FastifyInstance } from "fastify";
-import { createApp } from "../../index.ts";
+
+interface MockTask {
+  id: number;
+  description: string;
+  completed: boolean;
+  userId: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// In-memory task store backing the Prisma mock
+let tasks: MockTask[] = [];
+let nextId = 1;
+
+function createMockTask(data: {
+  description: string;
+  completed?: boolean;
+}): MockTask {
+  const now = new Date();
+  return {
+    id: nextId++,
+    description: data.description,
+    completed: data.completed ?? false,
+    userId: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+const mockPrisma = {
+  task: {
+    findMany: async (_args?: unknown) =>
+      [...tasks].sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      ),
+    findUnique: async (args: { where: { id: number } }) =>
+      tasks.find((t) => t.id === args.where.id) ?? null,
+    create: async (args: { data: { description: string } }) => {
+      const task = createMockTask(args.data);
+      tasks.push(task);
+      return task;
+    },
+    update: async (args: {
+      where: { id: number };
+      data: Record<string, unknown>;
+    }) => {
+      const task = tasks.find((t) => t.id === args.where.id);
+      if (!task)
+        throw Object.assign(new Error("Record not found"), { code: "P2025" });
+      Object.assign(task, args.data, { updatedAt: new Date() });
+      return task;
+    },
+    delete: async (args: { where: { id: number } }) => {
+      const idx = tasks.findIndex((t) => t.id === args.where.id);
+      if (idx === -1)
+        throw Object.assign(new Error("Record not found"), { code: "P2025" });
+      return tasks.splice(idx, 1)[0];
+    },
+    deleteMany: async () => {
+      tasks = [];
+      return { count: 0 };
+    },
+  },
+  $disconnect: async () => {},
+};
 
 // ============================================================================
 // AC1: GET /api/tasks
 // ============================================================================
-describe("Tasks API", () => {
+describe("Tasks API", async () => {
+  // Mock Prisma BEFORE importing the app
+  const { mock } = await import("node:test");
+  mock.module("../../db/prisma.ts", {
+    namedExports: { prisma: mockPrisma },
+  });
+
+  const { createApp } = await import("../../index.ts");
+
   let app: FastifyInstance;
 
   before(async () => {
     app = await createApp();
+  });
+
+  beforeEach(() => {
+    tasks = [];
+    nextId = 1;
   });
 
   after(async () => {
@@ -24,12 +108,8 @@ describe("Tasks API", () => {
     });
 
     t.assert.strictEqual(response.statusCode, 200);
-    const tasks = JSON.parse(response.body);
-    t.assert.strictEqual(
-      Array.isArray(tasks),
-      true,
-      "Response should be an array",
-    );
+    const body = JSON.parse(response.body);
+    t.assert.strictEqual(Array.isArray(body), true, "Response should be an array");
   });
 
   test("GET /api/tasks returns empty array when no tasks", async (t: TestContext) => {
@@ -39,12 +119,8 @@ describe("Tasks API", () => {
     });
 
     t.assert.strictEqual(response.statusCode, 200);
-    const tasks = JSON.parse(response.body);
-    t.assert.strictEqual(
-      Array.isArray(tasks),
-      true,
-      "Response should be an array",
-    );
+    const body = JSON.parse(response.body);
+    t.assert.strictEqual(Array.isArray(body), true, "Response should be an array");
   });
 
   // ============================================================================
@@ -123,16 +199,9 @@ describe("Tasks API", () => {
 
     t.assert.strictEqual(response.statusCode, 400);
     const body = JSON.parse(response.body);
-    t.assert.strictEqual(
-      typeof body.error,
-      "object",
-      "Response should have error field",
-    );
+    t.assert.strictEqual(typeof body.error, "object", "Response should have error field");
     t.assert.strictEqual(body.error.code, "VALIDATION_ERROR");
-    t.assert.strictEqual(
-      body.error.message,
-      "Task description cannot be empty",
-    );
+    t.assert.strictEqual(body.error.message, "Task description cannot be empty");
   });
 
   test("POST /api/tasks with missing description field returns 400 ValidationError", async (t: TestContext) => {
@@ -268,8 +337,8 @@ describe("Tasks API", () => {
       method: "GET",
       url: "/api/tasks",
     });
-    const tasks = JSON.parse(getResponse.body);
-    const deleted = tasks.find((t: Task) => t.id === createdTask.id);
+    const remainingTasks = JSON.parse(getResponse.body);
+    const deleted = remainingTasks.find((t: Task) => t.id === createdTask.id);
     t.assert.strictEqual(deleted, undefined, "Task should be deleted");
   });
 
@@ -300,10 +369,7 @@ describe("Tasks API", () => {
     const body = JSON.parse(response.body);
     t.assert.ok(body.error, "Should have error field");
     t.assert.strictEqual(body.error.code, "VALIDATION_ERROR");
-    t.assert.strictEqual(
-      body.error.message,
-      "Task description cannot be empty",
-    );
+    t.assert.strictEqual(body.error.message, "Task description cannot be empty");
     t.assert.strictEqual(typeof body.error.code, "string");
     t.assert.strictEqual(typeof body.error.message, "string");
   });
@@ -351,9 +417,9 @@ describe("Tasks API", () => {
       method: "GET",
       url: "/api/tasks",
     });
-    const tasks = JSON.parse(listResponse.body);
+    const listedTasks = JSON.parse(listResponse.body);
     t.assert.strictEqual(
-      tasks.some((t: Task) => t.id === task.id),
+      listedTasks.some((t: Task) => t.id === task.id),
       true,
       "Task should exist in list",
     );
