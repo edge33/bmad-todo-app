@@ -20,7 +20,7 @@ async function main() {
     await prisma.task.upsert({
       where: { description: task.description },
       update: {},
-      create: task, 
+      create: task,
     });
   }
   console.log("Seeded example tasks.");

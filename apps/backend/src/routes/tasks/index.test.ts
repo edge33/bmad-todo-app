@@ -41,9 +41,7 @@ function createMockTask(data: {
 const mockPrisma = {
   task: {
     findMany: async (_args?: unknown) =>
-      [...tasks].sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-      ),
+      [...tasks].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     findUnique: async (args: { where: { id: number } }) =>
       tasks.find((t) => t.id === args.where.id) ?? null,
     create: async (args: { data: { description: string } }) => {
@@ -110,7 +108,11 @@ describe("Tasks API", async () => {
 
     t.assert.strictEqual(response.statusCode, 200);
     const body = JSON.parse(response.body);
-    t.assert.strictEqual(Array.isArray(body), true, "Response should be an array");
+    t.assert.strictEqual(
+      Array.isArray(body),
+      true,
+      "Response should be an array",
+    );
   });
 
   test("GET /api/tasks returns empty array when no tasks", async (t: TestContext) => {
@@ -121,7 +123,11 @@ describe("Tasks API", async () => {
 
     t.assert.strictEqual(response.statusCode, 200);
     const body = JSON.parse(response.body);
-    t.assert.strictEqual(Array.isArray(body), true, "Response should be an array");
+    t.assert.strictEqual(
+      Array.isArray(body),
+      true,
+      "Response should be an array",
+    );
   });
 
   // ============================================================================
@@ -200,9 +206,16 @@ describe("Tasks API", async () => {
 
     t.assert.strictEqual(response.statusCode, 400);
     const body = JSON.parse(response.body);
-    t.assert.strictEqual(typeof body.error, "object", "Response should have error field");
+    t.assert.strictEqual(
+      typeof body.error,
+      "object",
+      "Response should have error field",
+    );
     t.assert.strictEqual(body.error.code, "VALIDATION_ERROR");
-    t.assert.strictEqual(body.error.message, "Task description cannot be empty");
+    t.assert.strictEqual(
+      body.error.message,
+      "Task description cannot be empty",
+    );
   });
 
   test("POST /api/tasks with missing description field returns 400 ValidationError", async (t: TestContext) => {
@@ -370,7 +383,10 @@ describe("Tasks API", async () => {
     const body = JSON.parse(response.body);
     t.assert.ok(body.error, "Should have error field");
     t.assert.strictEqual(body.error.code, "VALIDATION_ERROR");
-    t.assert.strictEqual(body.error.message, "Task description cannot be empty");
+    t.assert.strictEqual(
+      body.error.message,
+      "Task description cannot be empty",
+    );
     t.assert.strictEqual(typeof body.error.code, "string");
     t.assert.strictEqual(typeof body.error.message, "string");
   });

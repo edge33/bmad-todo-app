@@ -56,7 +56,10 @@ export function errorHandler(
   }
 
   const logEntry: Record<string, unknown> = {
-    err: error instanceof Error ? { message: error.message, stack: error.stack } : error,
+    err:
+      error instanceof Error
+        ? { message: error.message, stack: error.stack }
+        : error,
     ...(context?.action !== undefined ? { action: context.action } : {}),
     ...(context?.taskId !== undefined ? { taskId: context.taskId } : {}),
   };
