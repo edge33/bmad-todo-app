@@ -16,7 +16,11 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed": "node --env-file=.env prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "node --env-file=.env prisma/seed.ts"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",

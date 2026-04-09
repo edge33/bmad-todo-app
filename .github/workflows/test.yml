@@ -164,14 +164,6 @@ jobs:
           NODE_ENV: development
           BACKEND_URL: http://localhost:3000
 
-      - name: Upload coverage reports to Codecov
-        if: always()
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: apps/backend/coverage
-          flags: unit-tests
-
       - name: Cleanup background processes
         if: always()
         run: |
