@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Task } from "@todoapp/shared-types";
 import { notifyErrorToast, notifyUndoToast } from "../lib/toastBridge.ts";
-import { deleteTask } from "../services/taskService.ts";
+import { deleteTask, mapErrorToUserMessage } from "../services/taskService.ts";
 import { taskKeys } from "./queryKeys.ts";
 
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (id: number) => deleteTask(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: taskKeys.lists() });
@@ -16,13 +16,14 @@ export const useDeleteTask = () => {
       );
       return { previousData };
     },
-    onError: (error, _id, context) => {
+    onError: (error, id, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(taskKeys.lists(), context.previousData);
       }
-      const message =
-        error instanceof Error ? error.message : "Failed to delete task.";
-      notifyErrorToast(message);
+      if (import.meta.env.DEV) {
+        console.error("[useDeleteTask] mutation error:", error);
+      }
+      notifyErrorToast(mapErrorToUserMessage(error), () => mutation.mutate(id));
     },
     onSuccess: (_data, id, context) => {
       const deletedTask = context?.previousData?.find((t) => t.id === id);
@@ -36,4 +37,5 @@ export const useDeleteTask = () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
+  return mutation;
 };

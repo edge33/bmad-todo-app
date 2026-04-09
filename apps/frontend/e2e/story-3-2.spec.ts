@@ -185,7 +185,7 @@ test.describe("Story 3.2: TaskCard interactive states", () => {
     await deleteBtn.click();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /Simulated delete failure/ }),
+      page.getByRole("alert").filter({ hasText: /Something went wrong/ }),
     ).toBeVisible({ timeout: 15_000 });
 
     await expect(

@@ -169,7 +169,7 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     await activeRow.click();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /Simulated failure/ }),
+      page.getByRole("alert").filter({ hasText: /Something went wrong/ }),
     ).toBeVisible({ timeout: 15_000 });
 
     await expect(

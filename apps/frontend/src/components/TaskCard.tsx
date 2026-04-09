@@ -1,7 +1,32 @@
+import { useIsMutating } from "@tanstack/react-query";
 import type { Task } from "@todoapp/shared-types";
 import type React from "react";
 import { useUpdateTask } from "../hooks/useUpdateTask.ts";
 import { formatRelativeTime } from "../lib/formatDate.ts";
+
+const spinnerIcon = (
+  <svg
+    aria-hidden
+    className="h-4 w-4 animate-spin text-indigo-500"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <title>Loading</title>
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+    />
+  </svg>
+);
 
 const checkIcon = (
   <svg
@@ -47,11 +72,11 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
   onDelete,
 }) => {
   const { mutate, isPending } = useUpdateTask();
+  const isMutating = useIsMutating() > 0;
+  const isBlocked = isMutating || task.id < 1;
 
   const handleActivate = () => {
-    if (isPending || task.id < 1) {
-      return;
-    }
+    if (isBlocked) return;
     onCompleteStart?.(task.id);
     mutate({ id: task.id, completed: true });
   };
@@ -69,10 +94,10 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
         type="button"
         data-testid={`active-task-${task.id}`}
         aria-label={`Mark complete: ${task.description}`}
-        disabled={isPending || task.id < 1}
+        disabled={isBlocked}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
-        className="task-card-active flex min-h-[44px] w-full cursor-pointer items-start gap-3 rounded-xl border border-violet-100 bg-[#F5F3FF] p-4 text-left transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+        className="task-card-active flex min-h-[44px] w-full cursor-pointer items-start gap-3 rounded-xl border border-violet-100 bg-[#F5F3FF] p-4 text-left transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60"
       >
         <div className="min-w-0 flex-1">
           <span className="block text-base text-gray-900">
@@ -82,17 +107,20 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
             {formatRelativeTime(task.createdAt)}
           </time>
         </div>
-        <div className="w-10 shrink-0" />
+        <div className="flex w-10 shrink-0 items-center justify-center">
+          {isPending && spinnerIcon}
+        </div>
       </button>
       <button
         type="button"
         aria-label={`Delete task: ${task.description}`}
         data-testid={`delete-task-${task.id}`}
+        disabled={isBlocked}
         onClick={(e) => {
           e.stopPropagation();
           onDelete(task.id);
         }}
-        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
       >
         {trashIcon}
       </button>
@@ -111,6 +139,8 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
   playEntrance,
   onDelete,
 }) => {
+  const isMutating = useIsMutating() > 0;
+
   return (
     <div className="group relative">
       <article
@@ -139,11 +169,12 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
         type="button"
         aria-label={`Delete task: ${task.description}`}
         data-testid={`delete-task-${task.id}`}
+        disabled={isMutating}
         onClick={(e) => {
           e.stopPropagation();
           onDelete(task.id);
         }}
-        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
       >
         {trashIcon}
       </button>
