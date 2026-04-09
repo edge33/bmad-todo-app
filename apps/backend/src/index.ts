@@ -2,6 +2,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import autoload from "@fastify/autoload";
 import cors from "@fastify/cors";
+import closeWithGrace from "close-with-grace";
 import Fastify from "fastify";
 import { prisma } from "./db/prisma.ts";
 
@@ -40,6 +41,13 @@ export const createApp = async () => {
   await fastify.register(autoload, {
     dir: join(__dirname, "routes"),
     options: { prefix: "/api" },
+  });
+
+  closeWithGrace({ delay: 10_000 }, async ({ err, signal }) => {
+    if (err != null) {
+      fastify.log.error({ err, signal }, "server closing due to error");
+    }
+    await fastify.close();
   });
 
   return fastify;
