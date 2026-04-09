@@ -48,6 +48,52 @@ describe("Tasks API", () => {
   });
 
   // ============================================================================
+  // GET /api/tasks/:id
+  // ============================================================================
+
+  test("GET /api/tasks/:id returns 200 with the task", async (t: TestContext) => {
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/api/tasks",
+      payload: { description: "Find me by ID" },
+    });
+    const createdTask = JSON.parse(createResponse.body);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/tasks/${createdTask.id}`,
+    });
+
+    t.assert.strictEqual(response.statusCode, 200);
+    const task = JSON.parse(response.body);
+    t.assert.strictEqual(task.id, createdTask.id);
+    t.assert.strictEqual(task.description, "Find me by ID");
+  });
+
+  test("GET /api/tasks/:id with non-existent ID returns 404", async (t: TestContext) => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/tasks/99999",
+    });
+
+    t.assert.strictEqual(response.statusCode, 404);
+    const body = JSON.parse(response.body);
+    t.assert.ok(body.error);
+    t.assert.strictEqual(body.error.code, "NOT_FOUND");
+  });
+
+  test("GET /api/tasks/:id with invalid ID returns 400", async (t: TestContext) => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/tasks/invalid",
+    });
+
+    t.assert.strictEqual(response.statusCode, 400);
+    const body = JSON.parse(response.body);
+    t.assert.strictEqual(body.error.code, "VALIDATION_ERROR");
+  });
+
+  // ============================================================================
   // AC2: POST /api/tasks
   // ============================================================================
 
@@ -201,7 +247,7 @@ describe("Tasks API", () => {
   // AC4: DELETE /api/tasks/:id
   // ============================================================================
 
-  test("DELETE /api/tasks/:id returns 200", async (t: TestContext) => {
+  test("DELETE /api/tasks/:id returns 200 with deleted task", async (t: TestContext) => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/api/tasks",
@@ -215,6 +261,8 @@ describe("Tasks API", () => {
     });
 
     t.assert.strictEqual(response.statusCode, 200);
+    const deletedTask = JSON.parse(response.body);
+    t.assert.strictEqual(deletedTask.id, createdTask.id);
 
     const getResponse = await app.inject({
       method: "GET",

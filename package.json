@@ -20,7 +20,6 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
-    "format:check": "biome format --check .",
     "type-check": "pnpm -r run type-check",
     "db:migrate": "pnpm --filter @todoapp/backend run db:migrate",
     "commit": "cz",
@@ -54,6 +53,11 @@
     }
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "esbuild", "prisma"]
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
   }
 }

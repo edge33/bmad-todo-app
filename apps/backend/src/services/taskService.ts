@@ -24,6 +24,14 @@ export const taskService = {
     return tasks;
   },
 
+  getById(id: number): Task {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) {
+      throw new NotFoundError("Task", id);
+    }
+    return task;
+  },
+
   create(req: CreateTaskRequest): Task {
     const description = validateDescription(req.description);
 
@@ -68,12 +76,13 @@ export const taskService = {
     return task;
   },
 
-  delete(id: number): void {
+  delete(id: number): Task {
     const index = tasks.findIndex((t) => t.id === id);
     if (index === -1) {
       throw new NotFoundError("Task", id);
     }
 
-    tasks.splice(index, 1);
+    const deleted = tasks.splice(index, 1)[0] as Task;
+    return deleted;
   },
 };
