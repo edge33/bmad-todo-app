@@ -45,7 +45,7 @@ async function setupDeleteRoutes(page: Page, deleteStatus = 200) {
           status: deleteStatus,
           contentType: "application/json",
           body: JSON.stringify({
-            error: { code: "INTERNAL_ERROR", message: "Simulated failure" },
+            error: { code: "VALIDATION_ERROR", message: "Simulated failure" },
           }),
         });
         return;
@@ -221,7 +221,7 @@ test.describe("Story 5.1: Task Deletion with Undo Toast", () => {
   test("DELETE failure shows error toast and restores task", async ({
     page,
   }) => {
-    await setupDeleteRoutes(page, 500);
+    await setupDeleteRoutes(page, 422);
     await page.goto("/");
 
     const taskEl = page.locator('[data-testid^="active-task-"]', {

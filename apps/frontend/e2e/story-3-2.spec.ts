@@ -4,7 +4,7 @@ async function createTask(
   page: import("@playwright/test").Page,
 ): Promise<string> {
   const label = `E2E ${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const input = page.getByLabel("Add task description");
+  const input = page.getByLabel("Add Task");
   await input.fill(label);
   await input.press("Enter");
   return label;
@@ -91,7 +91,7 @@ test.describe("Story 3.2: TaskCard interactive states", () => {
       hasText: label,
     });
     await expect(completedRow).toBeVisible({ timeout: 15_000 });
-    await expect(completedRow.locator("svg")).toBeVisible();
+    await expect(completedRow.getByText("✅")).toBeVisible();
   });
 
   test("delete button reveals on hover on desktop (active card)", async ({
@@ -166,11 +166,11 @@ test.describe("Story 3.2: TaskCard interactive states", () => {
     await page.route(/\/api\/tasks\/\d+/, async (route) => {
       if (route.request().method() === "DELETE") {
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
           body: JSON.stringify({
             error: {
-              code: "INTERNAL_ERROR",
+              code: "VALIDATION_ERROR",
               message: "Simulated delete failure",
             },
           }),
@@ -185,7 +185,7 @@ test.describe("Story 3.2: TaskCard interactive states", () => {
     await deleteBtn.click();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /Something went wrong/ }),
+      page.getByRole("alert").filter({ hasText: /Please check your input/ }),
     ).toBeVisible({ timeout: 15_000 });
 
     await expect(

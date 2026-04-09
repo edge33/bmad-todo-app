@@ -7,34 +7,45 @@ A full-stack TypeScript monorepo application built with pnpm workspaces, React +
 ```
 todoapp/
 ├── apps/
-│   ├── frontend/          # React + Vite application
-│   └── backend/           # Fastify API server
+│   ├── frontend/          # React 19 + Vite 8 + Tailwind CSS 4
+│   │   ├── Dockerfile     # Multi-stage build → Nginx
+│   │   ├── nginx.conf     # Reverse proxy config for /api/
+│   │   └── e2e/           # Playwright E2E tests
+│   └── backend/           # Fastify 5 + Prisma 7
+│       ├── Dockerfile     # Multi-stage build → Node 24
+│       ├── entrypoint.sh  # Runs migrations + seed before start
+│       ├── prisma/        # Schema, migrations, seed
+│       └── bruno/         # API feature tests
 ├── packages/
 │   ├── shared-types/      # Shared API type definitions
 │   └── shared-utils/      # Shared utility functions
+├── docker-compose.yml     # Full-stack orchestration
+├── .dockerignore          # Docker build exclusions
 ├── pnpm-workspace.yaml    # pnpm workspace configuration
 ├── package.json           # Root workspace package.json
 ├── tsconfig.base.json     # Shared TypeScript base configuration
-└── README.md              # This file
+└── biome.json             # Linter & formatter config
 ```
 
 ## Technology Stack
 
-- **Package Manager:** pnpm 8.15.4+
-- **Language:** TypeScript 5.3.3+
-- **Frontend:** React 18.2+ with Vite 5.0+
-- **Backend:** Fastify 4.25+
-- **Node.js:** 18.0.0+
+- **Package Manager:** pnpm 10+
+- **Language:** TypeScript 6+
+- **Frontend:** React 19 with Vite 8, Tailwind CSS 4, TanStack Query 5
+- **Backend:** Fastify 5 with Prisma 7 (PostgreSQL)
+- **Testing:** Node.js built-in test runner (unit), Bruno (API feature tests), Playwright (E2E)
+- **Code Quality:** Biome (lint + format), Husky + lint-staged, Commitizen + Commitlint
+- **Node.js:** 24.0.0+
 
 ## Prerequisites
 
 - Node.js 24.0.0 or higher
-- pnpm 8.0.0 or higher
-- Docker and Docker Compose (for containerized development)
+- pnpm 10.0.0 or higher (enabled via corepack)
+- Docker and Docker Compose (for containerized deployment)
 
-Install pnpm globally if not already installed:
+Enable pnpm via corepack (bundled with Node.js):
 ```bash
-npm install -g pnpm
+corepack enable
 ```
 
 ### Docker Setup
@@ -63,43 +74,72 @@ Install dependencies for all workspaces:
 pnpm install
 ```
 
-### Docker Containers (Optional)
+### Running with Docker Compose
 
-To run services in Docker containers:
+Docker Compose starts the full stack (PostgreSQL, backend, frontend) with a single command.
 
 1. **Copy environment configuration:**
    ```bash
    cp .env.example .env
    ```
 
-2. **Start containers:**
+2. **Build and start all services:**
    ```bash
-   docker-compose up -d
+   docker compose up -d --build
    ```
 
    This starts:
-   - PostgreSQL 16 on `localhost:5432`
-   - Backend (placeholder, built in Epic 6)
-   - Frontend (placeholder, built in Epic 2)
+   - **PostgreSQL 16** on `localhost:5432` — with a health check; backend waits for it to be ready
+   - **Backend (Fastify)** on `localhost:3000` — runs Prisma migrations and seeds the database on startup via [entrypoint.sh](apps/backend/entrypoint.sh)
+   - **Frontend (Nginx)** on `localhost:5173` — serves the built React app and proxies `/api/` requests to the backend
 
-3. **View logs:**
+3. **Open the app:**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:3000
+
+4. **View logs:**
    ```bash
-   docker-compose logs -f postgres  # PostgreSQL logs
-   docker-compose logs -f backend   # Backend logs
-   docker-compose logs -f frontend  # Frontend logs
+   docker compose logs -f            # All services
+   docker compose logs -f backend    # Backend only
+   docker compose logs -f frontend   # Frontend only
+   docker compose logs -f postgres   # PostgreSQL only
    ```
 
-4. **Stop containers:**
+5. **Stop containers:**
    ```bash
-   docker-compose down
+   docker compose down
    ```
 
-   To remove volumes (warning: deletes database data):
+6. **Stop and remove volumes** (warning: deletes database data):
    ```bash
-   docker-compose down -v
+   docker compose down -v
    ```
 
-For detailed Docker setup and troubleshooting, see [docs/docker-setup.md](./docs/docker-setup.md).
+#### How It Works
+
+| Service | Image | Notes |
+|---------|-------|-------|
+| `postgres` | `postgres:16-alpine` | Data persisted in a named volume `postgres_data` |
+| `backend` | Multi-stage Node 24 build | Entrypoint runs `prisma migrate deploy` + seed before starting the server |
+| `frontend` | Multi-stage build → Nginx | Nginx serves static files and reverse-proxies `/api/` to the backend container |
+
+#### Environment Variables
+
+All variables have sensible defaults in `docker-compose.yml`. Override them in your `.env` file:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `POSTGRES_PASSWORD` | `postgres` | PostgreSQL password |
+| `POSTGRES_DB` | `todoapp_dev` | Database name |
+| `BACKEND_PORT` | `3000` | Host port mapped to the backend |
+| `FRONTEND_PORT` | `5173` | Host port mapped to the frontend |
+| `FRONTEND_URL` | `http://localhost:5173` | CORS origin allowed by the backend |
+
+#### Rebuilding After Code Changes
+
+```bash
+docker compose up -d --build
+```
 
 ### Development
 
@@ -351,16 +391,21 @@ The workflow uses environment variables from `.env.example`:
 ### Apps
 
 #### Frontend (`apps/frontend`)
-React application with Vite bundler, featuring:
-- Hot module reloading
-- TypeScript support
-- Ready for component libraries and routing
+React 19 application with Vite 8, featuring:
+- Tailwind CSS 4 for styling
+- TanStack Query for server state management
+- React Compiler via Babel plugin
+- Playwright E2E tests
+- Nginx-based production Docker image
 
 #### Backend (`apps/backend`)
-Fastify API server with:
-- TypeScript support
-- RESTful API routing
-- Shared types integration
+Fastify 5 API server with:
+- Prisma 7 ORM with PostgreSQL
+- Auto-loaded route modules (`@fastify/autoload`)
+- CORS support (`@fastify/cors`)
+- Graceful shutdown (`close-with-grace`)
+- Database migrations and seeding on startup
+- Bruno API feature tests
 
 ### Packages
 

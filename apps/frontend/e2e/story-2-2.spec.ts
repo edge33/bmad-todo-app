@@ -8,7 +8,7 @@ test.describe("Story 2.2: Responsive Layout", () => {
     await page.goto("/");
 
     // Input field should be visible
-    const input = page.locator('input[aria-label="Add task description"]');
+    const input = page.locator('input[aria-label="Add Task"]');
     await expect(input).toBeVisible();
 
     // Tasks section should be visible
@@ -19,17 +19,15 @@ test.describe("Story 2.2: Responsive Layout", () => {
     const completedSection = page.locator('section:has(h2:text("Completed"))');
     await expect(completedSection).toBeVisible();
 
-    // Verify two-column layout: Tasks ~60%, Completed ~40%
+    // Verify two-column layout: both columns ~50% width
     const tasksBox = await tasksSection.boundingBox();
     const completedBox = await completedSection.boundingBox();
 
     if (tasksBox && completedBox) {
-      const tasksWidth = tasksBox.width;
-      const completedWidth = completedBox.width;
-      const ratio = tasksWidth / completedWidth;
-      // 60/40 ratio should be ~1.5
-      expect(ratio).toBeGreaterThan(1.3);
-      expect(ratio).toBeLessThan(1.7);
+      const ratio = tasksBox.width / completedBox.width;
+      // 50/50 ratio should be ~1.0
+      expect(ratio).toBeGreaterThan(0.85);
+      expect(ratio).toBeLessThan(1.15);
     }
   });
 
@@ -40,7 +38,7 @@ test.describe("Story 2.2: Responsive Layout", () => {
     await page.goto("/");
 
     // Input field should be visible
-    const input = page.locator('input[aria-label="Add task description"]');
+    const input = page.locator('input[aria-label="Add Task"]');
     await expect(input).toBeVisible();
 
     // Tasks section should be visible and full width
@@ -126,10 +124,10 @@ test.describe("Story 2.2: Responsive Layout", () => {
     expect(scrollWidth).toBeLessThanOrEqual(375);
   });
 
-  test("input field is visible at top on desktop, bottom on mobile", async ({
+  test("input field is visible at top on both desktop and mobile", async ({
     page,
   }) => {
-    const input = page.locator('input[aria-label="Add task description"]');
+    const input = page.locator('input[aria-label="Add Task"]');
 
     // Desktop: input should appear before tasks in DOM visual order
     await page.setViewportSize({ width: 1024, height: 768 });
@@ -144,16 +142,16 @@ test.describe("Story 2.2: Responsive Layout", () => {
       expect(inputBox.y).toBeLessThanOrEqual(tasksBox.y + 50);
     }
 
-    // Mobile: input should appear after completed section
+    // Mobile: input should also appear at top (before tasks)
     await page.setViewportSize({ width: 375, height: 667 });
     const inputBoxMobile = await input.boundingBox();
-    const completedBoxMobile = await page
-      .locator('section:has(h2:text("Completed"))')
+    const tasksBoxMobile = await page
+      .locator('section:has(h2:text("Tasks"))')
       .boundingBox();
 
-    if (inputBoxMobile && completedBoxMobile) {
-      // Input top should be greater than Completed top on mobile
-      expect(inputBoxMobile.y).toBeGreaterThan(completedBoxMobile.y);
+    if (inputBoxMobile && tasksBoxMobile) {
+      // Input top should be less than or near Tasks top on mobile
+      expect(inputBoxMobile.y).toBeLessThanOrEqual(tasksBoxMobile.y + 50);
     }
   });
 });

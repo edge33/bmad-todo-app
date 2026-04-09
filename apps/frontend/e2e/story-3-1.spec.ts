@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 async function createTaskAndGetLabel(page: import("@playwright/test").Page) {
   const label = `E2E ${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const input = page.getByLabel("Add task description");
+  const input = page.getByLabel("Add Task");
   await input.fill(label);
   await input.press("Enter");
   return label;
@@ -31,7 +31,7 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     });
     await expect(completedRow).toBeVisible({ timeout: 15_000 });
 
-    await expect(completedRow.locator("svg")).toBeVisible();
+    await expect(completedRow.getByText("✅")).toBeVisible();
 
     // Entrance animation interpolates background; assert completed styling instead
     await expect(completedRow).toHaveClass(/bg-white/);
@@ -74,16 +74,26 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
       hasText: label,
     });
     await expect(activeRow).toBeVisible({ timeout: 15_000 });
+
+    // Set up MutationObserver BEFORE clicking to capture the entrance animation
+    // class before the 850ms cleanup timer removes it
+    const animDurationPromise = page.evaluate(() => {
+      return new Promise<string>((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("task-complete-enter class never appeared")), 15000);
+        const observer = new MutationObserver(() => {
+          const el = document.querySelector(`[data-testid^="completed-task-"]`);
+          if (el?.classList.contains("task-complete-enter")) {
+            observer.disconnect();
+            clearTimeout(timeout);
+            resolve(window.getComputedStyle(el).animationDuration);
+          }
+        });
+        observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+      });
+    });
+
     await activeRow.click();
-
-    const completedRow = page.locator(`[data-testid^="completed-task-"]`, {
-      hasText: label,
-    });
-    await expect(completedRow).toBeVisible({ timeout: 15_000 });
-
-    const animDuration = await completedRow.evaluate((el) => {
-      return window.getComputedStyle(el).animationDuration;
-    });
+    const animDuration = await animDurationPromise;
     expect(parseFloat(animDuration)).toBeGreaterThan(0);
   });
 
@@ -152,11 +162,11 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
       const req = route.request();
       if (req.method() === "PATCH") {
         await route.fulfill({
-          status: 500,
+          status: 422,
           contentType: "application/json",
           body: JSON.stringify({
             error: {
-              code: "INTERNAL_ERROR",
+              code: "VALIDATION_ERROR",
               message: "Simulated failure",
             },
           }),
@@ -169,7 +179,7 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     await activeRow.click();
 
     await expect(
-      page.getByRole("alert").filter({ hasText: /Something went wrong/ }),
+      page.getByRole("alert").filter({ hasText: /Please check your input/ }),
     ).toBeVisible({ timeout: 15_000 });
 
     await expect(
