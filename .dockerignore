@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.gitignore
+*.md
+.env*
+.husky
+coverage
+**/bruno
+**/*.test.ts
+**/*.spec.ts
+**/e2e
+**/playwright-report
+**/test-results
