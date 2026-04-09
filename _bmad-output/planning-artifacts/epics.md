@@ -894,6 +894,26 @@ So that routes remain thin and logic is testable and reusable.
 
 **And** unit tests passing in CI pipeline
 
+### Story 6.5: Graceful Shutdown with `@fastify/close-with-grace`
+
+As a developer,
+I want the Fastify server to handle OS signals (SIGTERM, SIGINT) gracefully,
+so that in-flight requests complete and all connections (Prisma, pg pool) are cleanly released before the process exits.
+
+**Acceptance Criteria:**
+
+**Given** the backend server is running,
+**When** SIGTERM or SIGINT is received (e.g., `docker stop`, Ctrl+C, Kubernetes pod eviction),
+**Then** `fastify.close()` is called, triggering the `onClose` hook which calls `prisma.$disconnect()` before process exit
+
+**And** a 10-second grace period allows in-flight requests to complete before force-close
+
+**And** any error that triggers shutdown is logged via `fastify.log.error` before closing
+
+**And** `pnpm run type-check` passes with zero errors
+
+**And** all existing unit tests (`pnpm run test:unit`) continue to pass
+
 ---
 
 ## Epic 7: Error Handling & Resilience

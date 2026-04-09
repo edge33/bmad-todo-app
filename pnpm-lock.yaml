@@ -56,6 +56,9 @@ importers:
       '@todoapp/shared-utils':
         specifier: workspace:*
         version: link:../../packages/shared-utils
+      close-with-grace:
+        specifier: ^2.5.0
+        version: 2.5.0
       fastify:
         specifier: ^5.8.4
         version: 5.8.4
@@ -1787,6 +1790,9 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+
+  close-with-grace@2.5.0:
+    resolution: {integrity: sha512-MewUtZQU6N4YVHIne63zGtjIQzTINgr6lQp2Y0CutaCw2FsdYahW57dH1Wdz+aV5ipbBzEBZD5znwX2NooS+IA==}
 
   color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -5370,7 +5376,7 @@ snapshots:
       '@usebruno/js': 0.46.1(debug@4.4.3)
       '@usebruno/lang': 0.35.0
       '@usebruno/requests': 0.16.2
-      aws4-axios: 3.4.0(axios@1.13.6(debug@4.4.3))
+      aws4-axios: 3.4.0(axios@1.13.6)
       axios: 1.13.6(debug@4.4.3)
       axios-ntlm: 1.4.6(debug@4.4.3)
       chai: 4.5.0
@@ -5564,7 +5570,7 @@ snapshots:
 
   aws-ssl-profiles@1.1.2: {}
 
-  aws4-axios@3.4.0(axios@1.13.6(debug@4.4.3)):
+  aws4-axios@3.4.0(axios@1.13.6):
     dependencies:
       '@aws-sdk/client-sts': 3.1026.0
       aws4: 1.13.2
@@ -5806,6 +5812,8 @@ snapshots:
       is-regexp: 3.1.0
 
   clone@1.0.4: {}
+
+  close-with-grace@2.5.0: {}
 
   color-convert@1.9.3:
     dependencies:

@@ -1,4 +1,4 @@
-import { beforeEach, describe, type TestContext, test } from "node:test";
+import { beforeEach, describe, mock, type TestContext, test } from "node:test";
 import { NotFoundError, ValidationError } from "../middleware/errorHandler.ts";
 
 function makePrismaTask(overrides: Record<string, unknown> = {}) {
@@ -29,7 +29,6 @@ const mockPrisma = {
 
 describe("taskService", async () => {
   // Mock the prisma module ONCE at describe level, then reconfigure per-test
-  const { mock } = await import("node:test");
   mock.module("../db/prisma.ts", {
     namedExports: { prisma: mockPrisma },
   });
