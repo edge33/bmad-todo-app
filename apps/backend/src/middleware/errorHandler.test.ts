@@ -1,4 +1,4 @@
-import { describe, type TestContext, test } from "node:test";
+import { after, before, describe, type TestContext, test } from "node:test";
 import {
   errorHandler,
   NotFoundError,
@@ -6,6 +6,13 @@ import {
 } from "./errorHandler.ts";
 
 describe("errorHandler", () => {
+  const originalError = console.error;
+  before(() => {
+    console.error = () => {};
+  });
+  after(() => {
+    console.error = originalError;
+  });
   // ============================================================================
   // ValidationError → 400 VALIDATION_ERROR
   // ============================================================================

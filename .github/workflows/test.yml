@@ -210,8 +210,24 @@ jobs:
         env: 
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
 
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(pnpm -C apps/frontend exec playwright --version | tr ' ' '-')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
       - name: Install Playwright browsers
-        run: pnpm -C apps/frontend exec playwright install --with-deps || { echo "❌ Playwright installation failed. Check system dependencies."; exit 1; }
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm -C apps/frontend exec playwright install --with-deps
+
+      - name: Install Playwright system deps only
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm -C apps/frontend exec playwright install-deps
 
       - name: Wait for PostgreSQL to be ready
         run: |

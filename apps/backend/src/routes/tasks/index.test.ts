@@ -86,9 +86,15 @@ describe("Tasks API", async () => {
   const { createApp } = await import("../../index.ts");
 
   let app: FastifyInstance;
+  const originalError = console.error;
 
   before(async () => {
+    console.error = () => {};
     app = await createApp();
+  });
+
+  after(() => {
+    console.error = originalError;
   });
 
   beforeEach(() => {
