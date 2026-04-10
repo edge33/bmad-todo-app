@@ -28,10 +28,16 @@ function validateDescription(description: unknown): string {
   if (typeof description !== "string") {
     throw new ValidationError("Task description must be a string");
   }
-  if (description.trim().length === 0) {
+  const trimmed = description.trim();
+  if (trimmed.length === 0) {
     throw new ValidationError("Task description cannot be empty");
   }
-  return description.trim();
+  if (trimmed.length > 500) {
+    throw new ValidationError(
+      "Task description must be 500 characters or fewer",
+    );
+  }
+  return trimmed;
 }
 
 export const taskService = {
