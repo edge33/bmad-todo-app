@@ -19,7 +19,9 @@ export const TaskInput: React.FC = () => {
     createTask(
       { description },
       {
-        onSuccess: () => setValue(""),
+        onSuccess: () => {
+          setValue("");
+        },
       },
     );
   };
@@ -41,8 +43,8 @@ export const TaskInput: React.FC = () => {
         type="text"
         placeholder="Add a task..."
         value={value}
-        disabled={isDisabled}
-        onChange={(e) => setValue(e.target.value)}
+        aria-disabled={isDisabled}
+        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={(e) => {
           handleSubmit(e);
           handleEscape(e);
