@@ -22,6 +22,7 @@ export const createApp = async () => {
   // Health check endpoint (register before autoload)
   fastify.get("/health", async (_request, reply) => {
     try {
+      await prisma.$queryRawUnsafe("SELECT 1");
       return { status: "ok", timestamp: new Date().toISOString() };
     } catch (err) {
       reply.status(503);
@@ -47,6 +48,7 @@ export const createApp = async () => {
     if (err != null) {
       fastify.log.error({ err, signal }, "server closing due to error");
     }
+    fastify.log.info({ signal }, "server closing");
     await fastify.close();
   });
 

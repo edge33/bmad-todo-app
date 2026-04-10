@@ -3,6 +3,9 @@ node_modules/
 /.pnp
 .pnp.js
 
+# Generated
+**/generated/
+
 # Production
 **/*/dist
 /build
