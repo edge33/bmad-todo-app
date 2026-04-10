@@ -89,25 +89,6 @@ jobs:
         env: 
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
 
-      - name: Validate DATABASE_URL
-        run: |
-          if [[ -z "$DATABASE_URL" ]]; then
-            echo "❌ DATABASE_URL is not set"
-            exit 1
-          fi
-          if [[ ! "$DATABASE_URL" =~ ^postgresql:// ]]; then
-            echo "❌ DATABASE_URL must start with postgresql://"
-            exit 1
-          fi
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-
-      - name: Run database migrations
-        run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
-          NODE_ENV: development
-
       - name: Wait for PostgreSQL to be ready
         run: |
           set -e
@@ -124,6 +105,12 @@ jobs:
           done
           echo "❌ PostgreSQL failed to start"
           exit 1
+
+      - name: Run database migrations
+        run: timeout 60 pnpm run db:migrate || { echo "❌ Migration failed or timed out"; exit 1; }
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todoapp_test
+          NODE_ENV: development
 
       - name: Start backend server
         run: |
@@ -214,20 +201,27 @@ jobs:
         id: playwright-version
         run: echo "version=$(pnpm -C apps/frontend exec playwright --version | tr ' ' '-')" >> $GITHUB_OUTPUT
 
-      - name: Cache Playwright browsers
+      - name: Restore Playwright browser cache
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
-      - name: Install Playwright browsers
+      - name: Install Playwright browsers and deps
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm -C apps/frontend exec playwright install --with-deps
 
       - name: Install Playwright system deps only
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm -C apps/frontend exec playwright install-deps
+
+      - name: Save Playwright browser cache
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Wait for PostgreSQL to be ready
         run: |
