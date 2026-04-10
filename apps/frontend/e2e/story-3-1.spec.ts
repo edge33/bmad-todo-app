@@ -34,7 +34,10 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     await expect(completedRow.getByText("✅")).toBeVisible();
 
     // Entrance animation interpolates background; assert completed styling instead
-    await expect(completedRow).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(completedRow).toHaveCSS(
+      "background-color",
+      "rgb(255, 255, 255)",
+    );
     await expect(completedRow).toHaveCSS("border-left-width", "4px");
 
     await expect(
@@ -79,7 +82,10 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     // class before the 850ms cleanup timer removes it
     const animDurationPromise = page.evaluate(() => {
       return new Promise<string>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("task-complete-enter class never appeared")), 15000);
+        const timeout = setTimeout(
+          () => reject(new Error("task-complete-enter class never appeared")),
+          15000,
+        );
         const observer = new MutationObserver(() => {
           const el = document.querySelector(`[data-testid^="completed-task-"]`);
           if (el?.classList.contains("task-complete-enter")) {
@@ -88,7 +94,12 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
             resolve(window.getComputedStyle(el).animationDuration);
           }
         });
-        observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+        observer.observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ["class"],
+        });
       });
     });
 

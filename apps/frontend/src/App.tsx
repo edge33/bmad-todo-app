@@ -81,13 +81,14 @@ function App() {
       className="min-h-screen overflow-x-hidden bg-gradient-to-br from-task-active-light to-task-complete-light dark:from-slate-900 dark:to-slate-800"
     >
       <DarkModeToggle />
-      <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col p-4 transition-all duration-200 ease-out md:p-6">
+      <main className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col p-4 transition-all duration-200 ease-out md:p-6">
+        <h1 className="sr-only">Todo App</h1>
         {/* Input field - full width, always at top */}
         <div className="order-1 mb-6 w-full shrink-0">
           <TaskInput />
         </div>
         <TaskLayout />
-      </div>
+      </main>
     </div>
   );
 }
