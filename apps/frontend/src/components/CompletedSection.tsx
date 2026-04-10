@@ -45,12 +45,17 @@ export const CompletedSection: React.FC<CompletedSectionProps> = ({
     );
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-3" aria-label="Completed tasks">
       <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
         {"✨ Completed"}
       </h2>
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {completed.length === 0
+          ? "No completed tasks"
+          : `${completed.length} completed ${completed.length === 1 ? "task" : "tasks"}`}
+      </div>
       {completed.length === 0 ? (
-        <div className="rounded-lg bg-white p-6 text-center text-gray-400 dark:bg-slate-800 dark:text-slate-400">
+        <div className="rounded-lg bg-white p-6 text-center text-gray-500 dark:bg-slate-800 dark:text-slate-400">
           No completed tasks yet.
         </div>
       ) : (

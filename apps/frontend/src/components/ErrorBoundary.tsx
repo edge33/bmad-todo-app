@@ -55,14 +55,14 @@ export default class ErrorBoundary extends React.Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleReset}
-                className="px-md py-xs bg-primary-DEFAULT text-white rounded-lg hover:bg-primary-dark transition-colors"
+                className="min-h-[44px] min-w-[44px] px-md py-xs bg-primary-DEFAULT text-white rounded-lg hover:bg-primary-dark transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 Try Again
               </button>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-md py-xs bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors"
+                className="min-h-[44px] min-w-[44px] px-md py-xs bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 Reload Page
               </button>

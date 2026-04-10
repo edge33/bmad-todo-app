@@ -45,7 +45,10 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
         await route.fulfill({
           status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
+          body: JSON.stringify({
+            success: false,
+            error: { code: "VALIDATION_ERROR" },
+          }),
         });
         return;
       }
@@ -79,7 +82,10 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
         await route.fulfill({
           status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
+          body: JSON.stringify({
+            success: false,
+            error: { code: "VALIDATION_ERROR" },
+          }),
         });
         return;
       }
@@ -88,7 +94,9 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
 
     await page.goto("/");
     // Wait for initial task list to load so the query cache is populated
-    await expect(page.locator('[data-testid^="active-task-"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.locator('[data-testid^="active-task-"]').first(),
+    ).toBeVisible({ timeout: 10_000 });
 
     const label = `E2E-4-2-rollback-${Date.now()}`;
     const input = page.getByLabel("Add Task");
@@ -117,7 +125,10 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
         await route.fulfill({
           status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
+          body: JSON.stringify({
+            success: false,
+            error: { code: "VALIDATION_ERROR" },
+          }),
         });
         return;
       }
@@ -155,7 +166,10 @@ test.describe("Story 4.2: useCreateTask error toast + retry", () => {
         await route.fulfill({
           status: 422,
           contentType: "application/json",
-          body: JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR" } }),
+          body: JSON.stringify({
+            success: false,
+            error: { code: "VALIDATION_ERROR" },
+          }),
         });
         return;
       }

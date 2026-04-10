@@ -51,7 +51,6 @@ export const TaskInput: React.FC = () => {
         }}
         maxLength={500}
         className="task-input disabled:opacity-60"
-        aria-label="Add Task"
       />
     </>
   );

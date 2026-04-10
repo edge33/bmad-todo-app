@@ -166,7 +166,9 @@ test.describe("Story 4.1: Task Input & Creation", () => {
     await page.goto("/");
     // Wait for initial task list to load so the query cache is populated
     // (ensures onError rollback has previousData to restore)
-    await expect(page.locator('[data-testid^="active-task-"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.locator('[data-testid^="active-task-"]').first(),
+    ).toBeVisible({ timeout: 10_000 });
 
     const label = `E2E-retry-${Date.now()}`;
     const input = page.getByLabel("Add Task");

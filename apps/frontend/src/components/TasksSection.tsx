@@ -40,12 +40,17 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   const active = (tasks ?? []).filter((t) => !t.completed);
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-3" aria-label="Active tasks">
       <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
         {"📝 Your Tasks"}
       </h2>
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {active.length === 0
+          ? "No active tasks"
+          : `${active.length} active ${active.length === 1 ? "task" : "tasks"}`}
+      </div>
       {active.length === 0 ? (
-        <div className="rounded-lg bg-white p-6 text-center text-gray-400 dark:bg-slate-800 dark:text-slate-400">
+        <div className="rounded-lg bg-white p-6 text-center text-gray-500 dark:bg-slate-800 dark:text-slate-400">
           No tasks yet. Add one to get started.
         </div>
       ) : (
