@@ -8,7 +8,7 @@ test.describe("Story 2.2: Responsive Layout", () => {
     await page.goto("/");
 
     // Input field should be visible
-    const input = page.locator('input[aria-label="Add Task"]');
+    const input = page.getByLabel("Add Task");
     await expect(input).toBeVisible();
 
     // Tasks section should be visible
@@ -38,7 +38,7 @@ test.describe("Story 2.2: Responsive Layout", () => {
     await page.goto("/");
 
     // Input field should be visible
-    const input = page.locator('input[aria-label="Add Task"]');
+    const input = page.getByLabel("Add Task");
     await expect(input).toBeVisible();
 
     // Tasks section should be visible and full width
@@ -127,7 +127,7 @@ test.describe("Story 2.2: Responsive Layout", () => {
   test("input field is visible at top on both desktop and mobile", async ({
     page,
   }) => {
-    const input = page.locator('input[aria-label="Add Task"]');
+    const input = page.getByLabel("Add Task");
 
     // Desktop: input should appear before tasks in DOM visual order
     await page.setViewportSize({ width: 1024, height: 768 });
