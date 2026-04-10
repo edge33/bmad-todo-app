@@ -1,4 +1,3 @@
-import { useIsMutating } from "@tanstack/react-query";
 import type { Task } from "@todoapp/shared-types";
 import type React from "react";
 import { useUpdateTask } from "../hooks/useUpdateTask.ts";
@@ -58,8 +57,8 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
   onDelete,
 }) => {
   const { mutate, isPending } = useUpdateTask();
-  const isMutating = useIsMutating() > 0;
-  const isBlocked = isMutating || task.id < 1;
+  const isOptimistic = task.id < 0;
+  const isBlocked = isPending || isOptimistic;
 
   const handleActivate = () => {
     if (isBlocked) return;
@@ -128,8 +127,6 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
   playEntrance,
   onDelete,
 }) => {
-  const isMutating = useIsMutating() > 0;
-
   return (
     <div className="group relative">
       <button
@@ -160,12 +157,11 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
         type="button"
         aria-label={`Delete task: ${task.description}`}
         data-testid={`delete-task-${task.id}`}
-        disabled={isMutating}
         onClick={(e) => {
           e.stopPropagation();
           onDelete(task.id);
         }}
-        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-30 [@media(hover:none)]:opacity-100"
+        className="absolute right-3 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-gray-400 opacity-0 transition-opacity hover:text-red-500 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
       >
         {trashIcon}
       </button>
