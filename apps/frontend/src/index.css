@@ -36,7 +36,7 @@ body {
     text-align: left;
     background-color: #ffffff;
   }
-  .task-active:hover {
+  .group:hover .task-active {
     transform: translateX(4px);
     box-shadow:
       0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -164,7 +164,7 @@ body {
     animation: none;
   }
 
-  .task-active:hover {
+  .group:hover .task-active {
     transform: none;
   }
 }

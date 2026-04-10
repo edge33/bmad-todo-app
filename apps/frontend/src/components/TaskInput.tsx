@@ -1,4 +1,3 @@
-import { useIsMutating } from "@tanstack/react-query";
 import type React from "react";
 import { useState } from "react";
 import { useCreateTask } from "../hooks/useCreateTask.ts";
@@ -6,8 +5,7 @@ import { useCreateTask } from "../hooks/useCreateTask.ts";
 export const TaskInput: React.FC = () => {
   const [value, setValue] = useState("");
   const { mutate: createTask, isPending } = useCreateTask();
-  const isMutating = useIsMutating() > 0;
-  const isDisabled = isPending || isMutating;
+  const isDisabled = isPending;
 
   const handleSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") {

@@ -56,7 +56,11 @@ export const useUpdateTask = () => {
       );
     },
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      // Replace the optimistic entry with the real server data
+      // instead of invalidating, which causes a full refetch and flash.
+      queryClient.setQueryData<Task[]>(taskKeys.lists(), (old) =>
+        old ? old.map((t) => (t.id === data.id ? data : t)) : old,
+      );
       if (variables.completed === true) {
         notifyUndoToast({
           taskId: data.id,

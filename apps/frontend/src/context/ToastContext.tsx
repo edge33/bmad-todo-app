@@ -67,7 +67,7 @@ function ToastViewport() {
         {toast.onRetry && (
           <button
             type="button"
-            className="min-h-[44px] min-w-[44px] rounded-md bg-indigo-600 px-3 py-2 font-medium text-white"
+            className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md bg-indigo-600 px-3 py-2 font-medium text-white"
             onClick={() => {
               toast.onRetry?.();
               dismiss();
@@ -78,7 +78,7 @@ function ToastViewport() {
         )}
         <button
           type="button"
-          className="min-h-[44px] min-w-[44px] rounded-md px-2 text-red-700 underline"
+          className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md px-2 text-red-700 underline dark:text-red-400"
           onClick={dismiss}
         >
           Dismiss
@@ -119,7 +119,7 @@ function ToastViewport() {
       </button>
       <button
         type="button"
-        className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md px-2 text-gray-600 underline"
+        className="min-h-[44px] min-w-[44px] cursor-pointer rounded-md px-2 text-gray-600 underline dark:text-slate-300"
         onClick={dismiss}
       >
         Dismiss

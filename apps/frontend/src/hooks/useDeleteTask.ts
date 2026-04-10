@@ -34,7 +34,6 @@ export const useDeleteTask = () => {
           action: "delete",
         });
       }
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
   return mutation;
