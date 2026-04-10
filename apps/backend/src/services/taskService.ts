@@ -1,10 +1,10 @@
-import type { Task as PrismaTask } from "@prisma/client";
 import type {
   CreateTaskRequest,
   Task,
   UpdateTaskRequest,
 } from "@todoapp/shared-types";
 import { prisma } from "../db/prisma.ts";
+import type { Task as PrismaTask } from "../generated/prisma/client.ts";
 import { NotFoundError, ValidationError } from "../middleware/errorHandler.ts";
 
 function isPrismaNotFound(error: unknown): boolean {
