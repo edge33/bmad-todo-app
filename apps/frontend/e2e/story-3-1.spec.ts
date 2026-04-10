@@ -34,7 +34,7 @@ test.describe("Story 3.1: Task completion (optimistic + animations)", () => {
     await expect(completedRow.getByText("✅")).toBeVisible();
 
     // Entrance animation interpolates background; assert completed styling instead
-    await expect(completedRow).toHaveClass(/bg-white/);
+    await expect(completedRow).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(completedRow).toHaveCSS("border-left-width", "4px");
 
     await expect(

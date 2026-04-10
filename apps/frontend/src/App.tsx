@@ -78,7 +78,7 @@ function App() {
   return (
     <div
       data-testid="app-container"
-      className="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#f5f3ff] to-[#e8f5e9] dark:from-slate-900 dark:to-slate-800"
+      className="min-h-screen overflow-x-hidden bg-gradient-to-br from-task-active-light to-task-complete-light dark:from-slate-900 dark:to-slate-800"
     >
       <DarkModeToggle />
       <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col p-4 transition-all duration-200 ease-out md:p-6">

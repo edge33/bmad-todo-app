@@ -18,7 +18,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   if (isLoading) {
     return (
       <section className="space-y-3" aria-busy="true">
-        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+        <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
           {"📝 Your Tasks"}
         </h2>
         <LoadingSpinner />
@@ -29,7 +29,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   if (error) {
     return (
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+        <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
           {"📝 Your Tasks"}
         </h2>
         <ErrorMessage error={error} />
@@ -41,7 +41,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+      <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
         {"📝 Your Tasks"}
       </h2>
       {active.length === 0 ? (
