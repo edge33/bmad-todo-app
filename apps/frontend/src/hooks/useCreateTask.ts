@@ -54,13 +54,20 @@ export const useCreateTask = () => {
       );
     },
     onSuccess: (data, _vars, context) => {
-      // Replace the optimistic entry with the real server data instead of
-      // invalidating the whole query, which triggers a full refetch and
-      // causes every list item to flash.
+      // Merge server data but keep the temp id so the React key (task.id)
+      // stays stable — avoids unmount/remount that would break focus.
       const tempId = context?.tempId;
       queryClient.setQueryData<Task[]>(taskKeys.lists(), (old) =>
-        old ? old.map((t) => (t.id === tempId ? data : t)) : [data],
+        old
+          ? old.map((t) => (t.id === tempId ? { ...data, id: tempId } : t))
+          : [data],
       );
+    },
+    onSettled: () => {
+      // Background refetch to converge temp ids to real server ids.
+      // Runs after both success and error, so the cache eventually
+      // reflects the true server state.
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
 
