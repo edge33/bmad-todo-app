@@ -18,7 +18,7 @@ export const CompletedSection: React.FC<CompletedSectionProps> = ({
   if (isLoading) {
     return (
       <section className="space-y-3" aria-busy="true">
-        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+        <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
           {"✨ Completed"}
         </h2>
         <LoadingSpinner />
@@ -29,7 +29,7 @@ export const CompletedSection: React.FC<CompletedSectionProps> = ({
   if (error) {
     return (
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+        <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
           {"✨ Completed"}
         </h2>
         <ErrorMessage error={error} />
@@ -46,7 +46,7 @@ export const CompletedSection: React.FC<CompletedSectionProps> = ({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-bold text-[#2c2c2c] dark:text-slate-100">
+      <h2 className="text-lg font-bold text-task-text-heading dark:text-slate-100">
         {"✨ Completed"}
       </h2>
       {completed.length === 0 ? (

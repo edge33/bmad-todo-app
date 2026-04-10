@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,6 +14,83 @@ body {
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Story 10.1: Design token component classes */
+@layer components {
+  .task-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 200ms ease;
+    width: 100%;
+    text-align: left;
+  }
+
+  .task-active {
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    width: 100%;
+    text-align: left;
+    background-color: #ffffff;
+  }
+  .task-active:hover {
+    transform: translateX(4px);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+  :is(.dark *) .task-active {
+    background-color: #334155;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.2);
+  }
+
+  .task-complete {
+    border-radius: 12px;
+    padding: 14px 16px;
+    padding-left: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 200ms ease;
+    width: 100%;
+    text-align: left;
+    background-color: #ffffff;
+    border-left: 4px solid #22c55e;
+  }
+  .task-complete:hover {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+  :is(.dark *) .task-complete {
+    background-color: #1e293b;
+  }
+
+  .task-input {
+    width: 100%;
+    border-radius: 12px;
+    border: 2px dashed #6366f1;
+    background-color: #ffffff;
+    padding: 12px 14px;
+    font-size: 16px;
+    color: #4a4a4a;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .task-input:focus {
+    border-style: solid;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    outline: none;
+  }
+  :is(.dark *) .task-input {
+    border-color: #818cf8;
+    background-color: #1e293b;
+    color: #f1f5f9;
+  }
+  :is(.dark *) .task-input::placeholder {
+    color: #94a3b8;
+  }
 }
 
 /* Story 3.1: completion entrance (bounce + color + checkmark + slide) */
@@ -84,5 +162,9 @@ body {
   .task-complete-enter svg {
     opacity: 1;
     animation: none;
+  }
+
+  .task-active:hover {
+    transform: none;
   }
 }

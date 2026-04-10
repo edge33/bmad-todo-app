@@ -68,6 +68,14 @@ source: "Code review of STORY-2-1-COMPLETION (Story 2.1)"
 
 ---
 
+## Deferred from: code review of 10-1-tailwind-design-tokens-component-library (2026-04-10)
+
+- **Animation timing 630ms vs AC spec 300-400ms** — Pre-existing bounce animation approved via Chrome MCP verification. AC discrepancy documented in story.
+- **Dark mode in `@layer` uses `:is(.dark *)` instead of Tailwind `dark:` prefix** — Manual CSS selectors in `@layer components` block. Works correctly but not "auto-generated" per AC #8. Acceptable trade-off for CSS component classes.
+- **`.task-complete` content area 4px narrower than active cards** — `border-left: 4px solid` in `border-box` model reduces content width. Pre-existing from Story 9.1 inline styles, just moved to CSS class.
+
+---
+
 ## Notes
 
 - Most deferred items are pre-existing architectural concerns or out-of-scope for story 2.1.

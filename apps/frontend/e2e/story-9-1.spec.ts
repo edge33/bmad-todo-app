@@ -323,9 +323,13 @@ test.describe("Story 9.1: Accessibility & Dark Mode", () => {
     await page.goto("/");
     const container = page.locator('[data-testid="app-container"]');
     await expect(container).toBeVisible();
-    const classes = await container.getAttribute("class");
-    expect(classes).toContain("from-[#f5f3ff]");
-    expect(classes).toContain("to-[#e8f5e9]");
+    const bgImage = await container.evaluate(
+      (el) => window.getComputedStyle(el).backgroundImage,
+    );
+    // Gradient should contain lavender (#f5f3ff) and green (#e8f5e9) colors
+    expect(bgImage).toContain("linear-gradient");
+    expect(bgImage).toMatch(/rgb\(245,\s*243,\s*255\)/);
+    expect(bgImage).toMatch(/rgb\(232,\s*245,\s*233\)/);
   });
 
   test("section headings show emoji prefixes", async ({ page }) => {
@@ -347,7 +351,7 @@ test.describe("Story 9.1: Accessibility & Dark Mode", () => {
     });
     await expect(card).toBeVisible({ timeout: 15_000 });
 
-    await expect(card).toHaveClass(/bg-white/);
+    await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
   });
 
   test("completed task cards have white bg, green left border, full opacity", async ({

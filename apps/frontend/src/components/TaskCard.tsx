@@ -83,10 +83,10 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
         disabled={isBlocked}
         onClick={handleActivate}
         onKeyDown={handleKeyDown}
-        className="task-card-active flex min-h-[44px] w-full cursor-pointer items-start gap-3 rounded-[10px] bg-white px-4 py-[14px] text-left shadow-sm transition-all hover:translate-x-1 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60 dark:bg-slate-700 dark:shadow-slate-900/20 dark:text-slate-100"
+        className="task-active flex min-h-[44px] cursor-pointer items-start gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60 dark:text-slate-100"
       >
         <div className="min-w-0 flex-1">
-          <span className="block truncate text-base text-[#4a4a4a] dark:text-slate-100">
+          <span className="block truncate text-base text-task-text-primary dark:text-task-text-dark-primary">
             {task.description}
           </span>
           <time
@@ -136,21 +136,20 @@ export const CompletedTaskCard: React.FC<CompletedTaskCardProps> = ({
         type="button"
         aria-label={`Completed task: ${task.description}`}
         data-testid={`completed-task-${task.id}`}
-        className={`task-card-completed flex min-h-[44px] w-full cursor-default items-center gap-3 rounded-[10px] bg-white px-4 py-[14px] pl-3 text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-slate-800 ${
+        className={`task-complete flex min-h-[44px] cursor-default items-center gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
           playEntrance ? "task-complete-enter" : ""
         }`}
-        style={{ borderLeftWidth: 4, borderLeftColor: "#22c55e" }}
       >
         <span className="shrink-0 text-lg" aria-hidden>
           ✅
         </span>
         <div className="min-w-0 flex-1">
-          <span className="block truncate text-base font-medium text-[#2d5a3d] dark:text-emerald-300">
+          <span className="block truncate text-base font-medium text-task-text-complete dark:text-task-text-dark-complete">
             {task.description}
           </span>
           <time
             dateTime={task.createdAt}
-            className="text-sm text-[#3d7a5a] dark:text-emerald-400"
+            className="text-sm text-task-text-complete-secondary dark:text-task-text-dark-complete-secondary"
           >
             {formatRelativeTime(task.createdAt)}
           </time>
