@@ -86,9 +86,15 @@ describe("Tasks API", async () => {
   const { createApp } = await import("../../index.ts");
 
   let app: FastifyInstance;
+  const originalError = console.error;
 
   before(async () => {
+    console.error = () => {};
     app = await createApp();
+  });
+
+  after(() => {
+    console.error = originalError;
   });
 
   beforeEach(() => {
@@ -498,7 +504,10 @@ describe("Tasks API", async () => {
       t.assert.strictEqual(response.statusCode, 500);
       const body = JSON.parse(response.body);
       t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
-      t.assert.strictEqual(body.error.message, "Internal server error");
+      t.assert.strictEqual(
+        body.error.message,
+        "An unexpected error occurred. Please try again later.",
+      );
     });
 
     test("POST /api/tasks returns 500 on unexpected DB failure", async (t: TestContext) => {

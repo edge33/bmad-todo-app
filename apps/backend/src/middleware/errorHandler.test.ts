@@ -1,4 +1,4 @@
-import { describe, type TestContext, test } from "node:test";
+import { after, before, describe, type TestContext, test } from "node:test";
 import {
   errorHandler,
   NotFoundError,
@@ -6,6 +6,13 @@ import {
 } from "./errorHandler.ts";
 
 describe("errorHandler", () => {
+  const originalError = console.error;
+  before(() => {
+    console.error = () => {};
+  });
+  after(() => {
+    console.error = originalError;
+  });
   // ============================================================================
   // ValidationError → 400 VALIDATION_ERROR
   // ============================================================================
@@ -36,7 +43,10 @@ describe("errorHandler", () => {
 
     t.assert.strictEqual(status, 500);
     t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
-    t.assert.strictEqual(body.error.message, "Internal server error");
+    t.assert.strictEqual(
+      body.error.message,
+      "An unexpected error occurred. Please try again later.",
+    );
   });
 
   test("non-Error value maps to 500 INTERNAL_ERROR", (t: TestContext) => {

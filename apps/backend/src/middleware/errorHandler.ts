@@ -55,11 +55,12 @@ export function errorHandler(
     };
   }
 
+  // Log full error details server-side only — never expose to client
   const logEntry: Record<string, unknown> = {
     err:
       error instanceof Error
-        ? { message: error.message, stack: error.stack }
-        : error,
+        ? { message: error.message, stack: error.stack, name: error.name }
+        : String(error),
     ...(context?.action !== undefined ? { action: context.action } : {}),
     ...(context?.taskId !== undefined ? { taskId: context.taskId } : {}),
   };
@@ -70,7 +71,7 @@ export function errorHandler(
     body: {
       error: {
         code: "INTERNAL_ERROR",
-        message: "Internal server error",
+        message: "An unexpected error occurred. Please try again later.",
       },
     },
   };
