@@ -36,7 +36,10 @@ describe("errorHandler", () => {
 
     t.assert.strictEqual(status, 500);
     t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
-    t.assert.strictEqual(body.error.message, "Internal server error");
+    t.assert.strictEqual(
+      body.error.message,
+      "An unexpected error occurred. Please try again later.",
+    );
   });
 
   test("non-Error value maps to 500 INTERNAL_ERROR", (t: TestContext) => {

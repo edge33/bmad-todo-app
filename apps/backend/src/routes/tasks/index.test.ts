@@ -498,7 +498,10 @@ describe("Tasks API", async () => {
       t.assert.strictEqual(response.statusCode, 500);
       const body = JSON.parse(response.body);
       t.assert.strictEqual(body.error.code, "INTERNAL_ERROR");
-      t.assert.strictEqual(body.error.message, "Internal server error");
+      t.assert.strictEqual(
+        body.error.message,
+        "An unexpected error occurred. Please try again later.",
+      );
     });
 
     test("POST /api/tasks returns 500 on unexpected DB failure", async (t: TestContext) => {
